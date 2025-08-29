@@ -56,30 +56,16 @@ final movieAgentCard = A2AAgentCard()
   ])
   ..supportsAuthenticatedExtendedCard = false;
 
-///
-/// Step 2 - Define the Agent Executor
-///
-
-// 1. Define your agent's logic as an  A2AAgentExecutor
+/// MovieAgentExecutor implements the agent's core logic.
 class MovieAgent implements A2AAgentExecutor {
   /// Executor construction helper.
   /// Late is OK here, a task cannot be cancelled until it has been created,
   /// which is done in the execute method.
   late A2AExecutorConstructor ec;
 
-  /// Ollama API key - adjust as you wish
-  final ollamaApiKey = 'sk-cd76c5a922384cb780c5f935eedf3214';
-
-  /// Model names - adjust as you wish
-  final model1 = 'gemma:7b';
-
-  /// Model provider id
-  final providerId = 'ollama';
-
   @override
   Future<void> cancelTask(String taskId, A2AExecutionEventBus eventBus) async =>
       ec.cancelTask = taskId;
-  // The execute loop is responsible for publishing the final state
 
   @override
   Future<void> execute(
