@@ -11,7 +11,8 @@ environment:
 
 dependencies:
     colorize: '^3.0.0'
-    a2a: ^2.3.0
+    a2a: '^2.3.0'
+    dartantic_ai: '^1.0.6'
 
 dev_dependencies:
   lints: '^6.0.0'
