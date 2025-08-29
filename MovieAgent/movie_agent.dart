@@ -75,14 +75,26 @@ class MovieAgent implements A2AAgentExecutor {
     /// Create the executor construction helper
     ec = A2AExecutorConstructor(requestContext, eventBus);
 
+    print(
+      '${Colorize('[MovieAgent] Processing message ${ec.userMessage.messageId} '
+          'for task ${ec.taskId} (context: ${ec.contextId})').blue()}',
+    );
+
+    // 1. Publish initial Task event if it's a new task
+    if (ec.existingTask == null) {
+      ec.publishInitialTaskUpdate();
+    }
+
+    final textPart = ec.createTextPart('Processing your question, hang tight!');
+    ec.publishWorkingTaskUpdate(part: [textPart]);
+
+
     // Check for request cancellation
     if (ec.isTaskCancelled) {
       print('${Colorize('Request cancelled for task: ${ec.taskId}').yellow()}');
       ec.publishCancelTaskUpdate();
       return;
     }
-
-    // 4. Publish final status update
 
     final finalMessageText = ec.createTextPart(
       'Final update from the LLM comparator agent',
