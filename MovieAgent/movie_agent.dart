@@ -7,6 +7,9 @@
 
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
+import 'package:dartantic_interface/dartantic_interface.dart';
+import 'dartantic.dart';
+import 'movie_agent_prompt.dart';
 
 /// The Movie Agent A2A Sample
 ///
@@ -85,8 +88,21 @@ class MovieAgent implements A2AAgentExecutor {
       ec.publishInitialTaskUpdate();
     }
 
+    // 2. Publish "working" status update
     final textPart = ec.createTextPart('Processing your question, hang tight!');
     ec.publishWorkingTaskUpdate(part: [textPart]);
+
+    // 3. Run the prompt and the query
+    final chatPrompt = ChatMessage.system(prompt);
+    final chatMessage = ChatMessage.user((ec.userMessage.parts?.first as A2ATextPart).text);
+
+    final response = chatModel.sendStream([chatPrompt, chatMessage]);
+    final messages = await response.first;
+    final message = messages.messages.first;
+    final responseText = message.text;
+    print(
+      '${Colorize('[MovieAgent] Prompt Response $responseText)').blue()}',
+    );
 
 
     // Check for request cancellation
@@ -95,15 +111,8 @@ class MovieAgent implements A2AAgentExecutor {
       ec.publishCancelTaskUpdate();
       return;
     }
-
-    final finalMessageText = ec.createTextPart(
-      'Final update from the LLM comparator agent',
-    );
-    final finalMessage = ec.createMessage(
-      'llm-comparison-agent',
-      parts: [finalMessageText],
-    );
-    ec.publishFinalTaskUpdate(message: finalMessage);
+    // 4. Publish final task status update
+    // TODO ec.createMessage(
   }
 }
 
