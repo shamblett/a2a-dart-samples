@@ -15,6 +15,7 @@ dependencies:
     dartantic_ai: '^1.0.6'
     dartantic_interface: '^1.0.2'
     json_schema: '^5.2.1'
+    oxy: '^0.0.3'
 
 dev_dependencies:
   lints: '^6.0.0'
