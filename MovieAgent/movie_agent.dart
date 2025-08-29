@@ -16,15 +16,13 @@ import 'package:colorize/colorize.dart';
 
 // Agent Card
 final movieAgentCard = A2AAgentCard()
-  ..name = 'LLM Comparison Agent'
+  ..name = 'Movie Agent'
   ..description =
-      'An agent that sends a prompt to two LLM\'s, gemma3 and gemma3:270m models '
-      'allowing the response from each model to be compared.'
-  // Adjust the base URL and port as needed.
-  ..url = 'http://localhost:41242/'
+      'An agent that can answer questions about movies and actors using TMDB.'
+  ..url = 'http://localhost:41241/'
   ..agentProvider = (A2AAgentProvider()
-    ..organization = 'Darticulate A2A Agents'
-    ..url = 'https://example.com/a2a-agents')
+    ..organization = 'A2A Dart Samples'
+    ..url = 'https://github.com/shamblett/a2a-dart-samples')
   ..version = '1.0.0'
   ..capabilities =
       (A2AAgentCapabilities()
@@ -37,16 +35,24 @@ final movieAgentCard = A2AAgentCard()
       null // Or define actual security schemes if any
   ..security = null
   ..defaultInputModes = ['text/plain']
-  ..defaultOutputModes = ['text/plain']
+  ..defaultOutputModes = ['text/plain', 'task-status']
   ..skills = ([
     A2AAgentSkill()
-      ..id = 'llm_comparison'
-      ..name = 'LLM Comparison'
-      ..description = 'Compare the responses of two LLM\'s for the same prompt.'
-      ..tags = ['LLM', 'gemma']
-      ..examples = ['What is Paris famous for?']
+      ..id = 'general_movie_chat'
+      ..name = 'General Movie Chat'
+      ..description =
+          'Answer general questions or chat about movies, actors, directors.'
+      ..tags = ['movies', 'actors', 'directors']
+      ..examples = [
+        'Tell me about the plot of Inception.',
+        'Recommend a good sci-fi movie.',
+        'Who directed The Matrix?',
+        'What other movies has Scarlett Johansson been in?',
+        'Find action movies starring Keanu Reeves',
+        'Which came out first, Jurassic Park or Terminator 2?',
+      ]
       ..inputModes = ['text/plain']
-      ..outputModes = ['text/plain'],
+      ..outputModes = ['text/plain', 'task-status'],
   ])
   ..supportsAuthenticatedExtendedCard = false;
 
@@ -83,13 +89,6 @@ class MovieAgent implements A2AAgentExecutor {
     /// Create the executor construction helper
     ec = A2AExecutorConstructor(requestContext, eventBus);
 
-    /// Create the Ollama providers
-    final model1Provider = await createProvider(
-      providerId: providerId,
-      apiKey: ollamaApiKey,
-      model: model1,
-    );
-
     // Check for request cancellation
     if (ec.isTaskCancelled) {
       print('${Colorize('Request cancelled for task: ${ec.taskId}').yellow()}');
@@ -109,7 +108,6 @@ class MovieAgent implements A2AAgentExecutor {
     ec.publishFinalTaskUpdate(message: finalMessage);
   }
 }
-
 
 final mwLogging = ((Request req, Response res, NextFunction next) {
   print(
@@ -147,7 +145,7 @@ void main() {
   // A2AServerDebug.on();
 
   // Start listening
-  const port = 41242;
+  const port = 41241;
   expressApp.listen(port, () {
     print(
       '${Colorize('[MovieAgent] Server using new framework started on http://localhost:$port').blue()}',
