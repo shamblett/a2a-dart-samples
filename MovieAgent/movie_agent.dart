@@ -112,6 +112,7 @@ class MovieAgent implements A2AAgentExecutor {
       return;
     }
     // 4. Publish final task status update
+    final modelResponse = ec.createTextPart(responseText);
     // TODO ec.createMessage(
   }
 }
