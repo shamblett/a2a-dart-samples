@@ -14,9 +14,9 @@ import 'config.dart';
 import 'tmdb.dart';
 
 // Json schemas
-final mustBeStringSchema = {'type': 'string'};
-final searchMoviesSchema = JsonSchema.create(mustBeStringSchema);
-final searchPeopleSchema = JsonSchema.create(mustBeStringSchema);
+final jsonSchema = {'type': 'object', 'properties': {'query' : {'type' : 'string'}}};
+final searchMoviesSchema = JsonSchema.create(jsonSchema);
+final searchPeopleSchema = JsonSchema.create(jsonSchema);
 
 // Tools
 final searchMoviesOnCall = ((query) async {
