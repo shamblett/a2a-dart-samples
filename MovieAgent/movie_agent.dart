@@ -109,6 +109,9 @@ class MovieAgent implements A2AAgentExecutor {
           print(
               '${Colorize('[MovieAgent] Tool results ${message.hasToolResults}').blue()}',
               );
+          print(
+            '${Colorize('[MovieAgent] Tool calls ${message.toolCalls}').blue()}',
+          );
           for (final toolCall in message.toolCalls) {
             print(
               '${Colorize('[MovieAgent] Tool call id ${toolCall.id}').blue()}',
