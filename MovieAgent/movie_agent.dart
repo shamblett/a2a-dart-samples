@@ -8,6 +8,8 @@
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
 import 'package:dartantic_interface/dartantic_interface.dart';
+import 'package:uuid/uuid.dart';
+
 import 'dartantic.dart';
 import 'movie_agent_prompt.dart';
 
@@ -61,6 +63,8 @@ final movieAgentCard = A2AAgentCard()
 
 /// MovieAgentExecutor implements the agent's core logic.
 class MovieAgent implements A2AAgentExecutor {
+  final _uuid = Uuid();
+
   /// Executor construction helper.
   /// Late is OK here, a task cannot be cancelled until it has been created,
   /// which is done in the execute method.
@@ -80,7 +84,7 @@ class MovieAgent implements A2AAgentExecutor {
 
     print(
       '${Colorize('[MovieAgent] Processing message ${ec.userMessage.messageId} '
-          'for task ${ec.taskId} (context: ${ec.contextId})').blue()}',
+      'for task ${ec.taskId} (context: ${ec.contextId})').blue()}',
     );
 
     // 1. Publish initial Task event if it's a new task
@@ -94,26 +98,58 @@ class MovieAgent implements A2AAgentExecutor {
 
     // 3. Run the prompt and the query
     final chatPrompt = ChatMessage.system(prompt);
-    final chatMessage = ChatMessage.user((ec.userMessage.parts?.first as A2ATextPart).text);
-
-    final response = chatModel.sendStream([chatPrompt, chatMessage]);
-    final messages = await response.first;
-    final message = messages.messages.first;
-    final responseText = message.text;
-    print(
-      '${Colorize('[MovieAgent] Prompt Response $responseText)').blue()}',
+    final chatMessage = ChatMessage.user(
+      (ec.userMessage.parts?.first as A2ATextPart).text,
     );
 
+    try {
+      final responses = chatModel.sendStream([chatPrompt, chatMessage]);
+      var responseText = '';
+      await for (final response in responses) {
+        for (final message in response.messages) {
+          responseText += message.text;
+        }
+      }
+      print(
+        '${Colorize('[MovieAgent] Prompt Response $responseText)').blue()}',
+      );
 
-    // Check for request cancellation
-    if (ec.isTaskCancelled) {
-      print('${Colorize('Request cancelled for task: ${ec.taskId}').yellow()}');
-      ec.publishCancelTaskUpdate();
-      return;
+      // Check for request cancellation
+      if (ec.isTaskCancelled) {
+        print(
+          '${Colorize('Request cancelled for task: ${ec.taskId}').yellow()}',
+        );
+        ec.publishCancelTaskUpdate();
+        return;
+      }
+
+      // 4. Publish final task status update
+      final modelResponse = ec.createTextPart(responseText);
+      final message = ec.createMessage(_uuid.v4(), parts: [modelResponse]);
+
+      ec.publishFinalTaskUpdate(message: message);
+
+      print(
+        '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} finished with state: completed').blue()}',
+      );
+    } catch (e) {
+      print(
+        '${Colorize('[MovieAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
+      );
+
+      final errorResponse = ec.createTextPart('Agent error: $e');
+      final message = ec.createMessage(_uuid.v4(), parts: [errorResponse]);
+      final errorTaskUpdate = A2ATaskStatusUpdateEvent()
+        ..taskId = ec.taskId
+        ..contextId = ec.contextId
+        ..status = (A2ATaskStatus()
+          ..message = message
+          ..state = A2ATaskState.failed
+          ..timestamp = A2AUtilities.getCurrentTimestamp())
+        ..end = true;
+
+      ec.publishUserObject(errorTaskUpdate);
     }
-    // 4. Publish final task status update
-    final modelResponse = ec.createTextPart(responseText);
-    // TODO ec.createMessage(
   }
 }
 
