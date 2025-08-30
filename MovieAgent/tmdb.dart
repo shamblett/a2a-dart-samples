@@ -29,12 +29,13 @@ Future<dynamic> callTmdbApi(String endpoint, String query) async {
       host: 'api.themoviedb.org',
       path: '3/search/$endpoint',
       queryParameters: {
-        'api+key': apiKey,
+        'api_key': apiKey,
         'query': query,
-        'include_adult': false,
+        'include_adult': 'false',
         'language': 'en-GB',
-        'page': 1,
+        'page': '1',
       },
+
     );
     final response = await fetch(url.toString());
 

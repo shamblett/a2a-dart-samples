@@ -14,7 +14,12 @@ import 'config.dart';
 import 'tmdb.dart';
 
 // Json schemas
-final jsonSchema = {'type': 'object', 'properties': {'query' : {'type' : 'string'}}};
+final jsonSchema = {
+  'type': 'object',
+  'properties': {
+    'query': {'type': 'string'},
+  },
+};
 final searchMoviesSchema = JsonSchema.create(jsonSchema);
 final searchPeopleSchema = JsonSchema.create(jsonSchema);
 
@@ -24,16 +29,18 @@ final searchMoviesOnCall = ((query) async {
 
   try {
     final data = await callTmdbApi('movie', query) as Map<String, dynamic>;
+    final results = data['results'];
+
     // Only modify image paths to be full URLs
-    if (data.containsKey('poster_path')) {
-      data['poster_path'] =
-          'https://image.tmdb.org/t/p/w500${data['poster_path']}';
+    if (results.containsKey('poster_path')) {
+      results['poster_path'] =
+          'https://image.tmdb.org/t/p/w500${results['poster_path']}';
     }
-    if (data.containsKey('backdrop_path')) {
+    if (results.containsKey('backdrop_path')) {
       data['backdrop_path'] =
-          'https://image.tmdb.org/t/p/w500${data['backdrop_path']}';
+          'https://image.tmdb.org/t/p/w500${results['backdrop_path']}';
     }
-    return data;
+    return results;
   } catch (e) {
     print('${Colorize('TMDB:searchMovies error searching movies').yellow()}');
     rethrow;
@@ -44,7 +51,7 @@ final searchMovies = Tool(
   name: 'searchMovies',
   description: 'Search TMDB for movies by title',
   inputSchema: searchMoviesSchema,
-  onCall: searchMoviesOnCall,
+  onCall: searchMoviesOnCall
 );
 
 final searchPeopleOnCall = ((query) async {
@@ -52,16 +59,17 @@ final searchPeopleOnCall = ((query) async {
 
   try {
     final data = await callTmdbApi('person', query) as Map<String, dynamic>;
+    final results = data['results'];
 
     // Only modify image paths to be full URLs
-    if (data.containsKey('profile_path')) {
-      data['profile_path'] =
-          'https://image.tmdb.org/t/p/w500${data['profile_path']}';
+    if (results.containsKey('profile_path')) {
+      results['profile_path'] =
+          'https://image.tmdb.org/t/p/w500${results['profile_path']}';
     }
 
     // Also modify poster paths in known_for works
-    if (data.containsKey('known_for')) {
-      for (final known in data['known_for']) {
+    if (results.containsKey('known_for')) {
+      for (final known in results['known_for']) {
         if (known.containsKey('poster_path')) {
           known['profile_path'] =
               'https://image.tmdb.org/t/p/w500${known['poster_path']}';
@@ -72,7 +80,7 @@ final searchPeopleOnCall = ((query) async {
         }
       }
     }
-    return data;
+    return results;
   } catch (e) {
     print('${Colorize('TMDB:searchPeople error searching people').yellow()}');
     rethrow;
@@ -83,7 +91,7 @@ final searchPeople = Tool(
   name: 'searchPeople',
   description: 'Search TMDB for or people by name',
   inputSchema: searchPeopleSchema,
-  onCall: searchPeopleOnCall,
+  onCall: searchPeopleOnCall
 );
 
 // Provider

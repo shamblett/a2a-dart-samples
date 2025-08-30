@@ -101,13 +101,31 @@ class MovieAgent implements A2AAgentExecutor {
     final chatMessage = ChatMessage.user(
       (ec.userMessage.parts?.first as A2ATextPart).text,
     );
-
     try {
       final responses = chatModel.sendStream([chatPrompt, chatMessage]);
       var responseText = '';
       await for (final response in responses) {
         for (final message in response.messages) {
-          responseText += message.text;
+          print(
+              '${Colorize('[MovieAgent] Tool results ${message.hasToolResults}').blue()}',
+              );
+          for (final toolCall in message.toolCalls) {
+            print(
+              '${Colorize('[MovieAgent] Tool call id ${toolCall.id}').blue()}',
+            );
+            print(
+              '${Colorize('[MovieAgent] Tool call name ${toolCall.name}').blue()}',
+            );
+            print(
+              '${Colorize('[MovieAgent] Tool call result ${toolCall.result}').blue()}',
+            );
+            print(
+              '${Colorize('[MovieAgent] Tool call arguments ${toolCall.arguments}').blue()}',
+            );
+          }
+          for (final toolPart in message.toolCalls) {
+            responseText += ' ${toolPart.arguments?['query']}';
+          }
         }
       }
       print(
@@ -123,7 +141,16 @@ class MovieAgent implements A2AAgentExecutor {
         return;
       }
 
-      // 4. Publish final task status update
+      // 4. Publish the result as an artifact
+      final artifactMessage = ec.createTextPart(responseText);
+      final artifact = ec.createArtifact(
+        _uuid.v4(),
+        name: 'Movie Agent Response',
+        parts: [artifactMessage],
+      );
+      ec.publishArtifactUpdate(artifact, lastChunk: true);
+
+      // 5. Publish final task status update
       final modelResponse = ec.createTextPart(responseText);
       final message = ec.createMessage(_uuid.v4(), parts: [modelResponse]);
 
