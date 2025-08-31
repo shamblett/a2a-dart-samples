@@ -8,7 +8,6 @@
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
 import 'package:dartantic_interface/dartantic_interface.dart';
-import 'package:uuid/uuid.dart';
 
 import 'dartantic.dart';
 import 'movie_agent_prompt.dart';
@@ -63,8 +62,6 @@ final movieAgentCard = A2AAgentCard()
 
 /// MovieAgentExecutor implements the agent's core logic.
 class MovieAgent implements A2AAgentExecutor {
-  final _uuid = Uuid();
-
   /// Executor construction helper.
   /// Late is OK here, a task cannot be cancelled until it has been created,
   /// which is done in the execute method.
@@ -107,8 +104,8 @@ class MovieAgent implements A2AAgentExecutor {
       await for (final response in responses) {
         for (final message in response.messages) {
           print(
-              '${Colorize('[MovieAgent] Tool results ${message.hasToolResults}').blue()}',
-              );
+            '${Colorize('[MovieAgent] Tool results ${message.hasToolResults}').blue()}',
+          );
           print(
             '${Colorize('[MovieAgent] Tool calls ${message.toolCalls}').blue()}',
           );
@@ -127,6 +124,7 @@ class MovieAgent implements A2AAgentExecutor {
             );
           }
           for (final toolPart in message.toolCalls) {
+            //TODO This is wrong but we can at least inspect the query parameters
             responseText += ' ${toolPart.arguments?['query']}';
           }
         }
@@ -147,7 +145,7 @@ class MovieAgent implements A2AAgentExecutor {
       // 4. Publish the result as an artifact
       final artifactMessage = ec.createTextPart(responseText);
       final artifact = ec.createArtifact(
-        _uuid.v4(),
+        ec.v4Uuid,
         name: 'Movie Agent Response',
         parts: [artifactMessage],
       );
@@ -155,7 +153,7 @@ class MovieAgent implements A2AAgentExecutor {
 
       // 5. Publish final task status update
       final modelResponse = ec.createTextPart(responseText);
-      final message = ec.createMessage(_uuid.v4(), parts: [modelResponse]);
+      final message = ec.createMessage(ec.v4Uuid, parts: [modelResponse]);
 
       ec.publishFinalTaskUpdate(message: message);
 
@@ -168,17 +166,8 @@ class MovieAgent implements A2AAgentExecutor {
       );
 
       final errorResponse = ec.createTextPart('Agent error: $e');
-      final message = ec.createMessage(_uuid.v4(), parts: [errorResponse]);
-      final errorTaskUpdate = A2ATaskStatusUpdateEvent()
-        ..taskId = ec.taskId
-        ..contextId = ec.contextId
-        ..status = (A2ATaskStatus()
-          ..message = message
-          ..state = A2ATaskState.failed
-          ..timestamp = A2AUtilities.getCurrentTimestamp())
-        ..end = true;
-
-      ec.publishUserObject(errorTaskUpdate);
+      final message = ec.createMessage(ec.v4Uuid, parts: [errorResponse]);
+      ec.publishFailedTaskUpdate(message: message);
     }
   }
 }
