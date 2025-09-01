@@ -105,24 +105,33 @@ class MovieAgent implements A2AAgentExecutor {
 
     // 3. Run the prompt and the query
     try {
-    final agent = Agent(
-      'google:gemini-2.0-flash',
-      tools: [searchMovies, searchPeople],
-    );
-
-    String responseText = '';
-    final question = (ec.userMessage.parts?.first as A2ATextPart).text;
-    final stream = agent.sendStream(question,
-      history: [
-        ChatMessage.system(prompt),
-      ],
-    );
-    await for (final chunk in stream) {
-      print(
-        '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
+      final agent = Agent(
+        'google:gemini-2.0-flash',
+        tools: [searchMovies, searchPeople],
       );
-      responseText += chunk.output;
-    }
+
+      String responseText = '';
+      final question = (ec.userMessage.parts?.first as A2ATextPart).text;
+      final stream = agent.sendStream(
+        question,
+        history: [ChatMessage.system(prompt)],
+      );
+
+      // Get the response
+      final responseLines = <String>[];
+      await for (final chunk in stream) {
+        print(
+          '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
+        );
+        responseLines.add(chunk.output);
+      }
+
+      for (final line in responseLines) {
+        if (line.isEmpty) {
+          continue;
+        }
+        responseText += line;
+      }
 
       // Check for request cancellation
       if (ec.isTaskCancelled) {
@@ -132,6 +141,9 @@ class MovieAgent implements A2AAgentExecutor {
         ec.publishCancelTaskUpdate();
         return;
       }
+
+      // Check for completed or awaiting input
+      //TODO
 
       // 5. Publish final task status update
       final modelResponse = ec.createTextPart(responseText);
