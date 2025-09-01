@@ -6,5 +6,7 @@
 */
 
 // Api keys, define these how you wish, e.g. in env vars etc,
-const googleApIKey = '';
-const tmdbApiKey = '';
+// and update your code as appropriate
+String googleApIKey = '';
+String tmdbApiKey = '';
+

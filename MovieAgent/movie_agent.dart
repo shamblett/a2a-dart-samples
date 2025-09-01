@@ -5,11 +5,14 @@
 * Copyright :  S.Hamblett
 */
 
+import 'dart:io';
+
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
 import 'package:dartantic_ai/dartantic_ai.dart';
 import 'package:dartantic_interface/dartantic_interface.dart';
 
+import 'config.dart';
 import 'dartantic.dart';
 import 'movie_agent_prompt.dart';
 
@@ -67,6 +70,12 @@ class MovieAgent implements A2AAgentExecutor {
   /// Late is OK here, a task cannot be cancelled until it has been created,
   /// which is done in the execute method.
   late A2AExecutorConstructor ec;
+
+  MovieAgent() {
+    // Set the API keys from their environment variables
+    googleApIKey = Platform.environment['GEMINI_API_KEY']!;
+    tmdbApiKey = Platform.environment['TMDB_API_KEY']!;
+  }
 
   @override
   Future<void> cancelTask(String taskId, A2AExecutionEventBus eventBus) async =>
