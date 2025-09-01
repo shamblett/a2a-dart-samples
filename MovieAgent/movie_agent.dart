@@ -117,22 +117,6 @@ class MovieAgent implements A2AAgentExecutor {
         history: [ChatMessage.system(prompt)],
       );
 
-      // Get the response
-      final responseLines = <String>[];
-      await for (final chunk in stream) {
-        print(
-          '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
-        );
-        responseLines.add(chunk.output);
-      }
-
-      for (final line in responseLines) {
-        if (line.isEmpty) {
-          continue;
-        }
-        responseText += line;
-      }
-
       // Check for request cancellation
       if (ec.isTaskCancelled) {
         print(
@@ -142,18 +126,52 @@ class MovieAgent implements A2AAgentExecutor {
         return;
       }
 
-      // Check for completed or awaiting input
-      //TODO
+      // Get the response
+      final responseLines = <String>[];
+      await for (final chunk in stream) {
+        print(
+          '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
+        );
+        responseLines.add(chunk.output);
+      }
 
-      // 5. Publish final task status update
+      // Assemble the response and check for completion from Gemini
+      bool complete = false; // True if the query is completed
+      for (final line in responseLines) {
+        if (line.isEmpty) {
+          continue;
+        }
+        if (line.contains('COMPLETED')) {
+          complete = true;
+        }
+        responseText += line;
+      }
+
+      // Check for completed or awaiting input
       final modelResponse = ec.createTextPart(responseText);
       final message = ec.createMessage(ec.v4Uuid, parts: [modelResponse]);
+      if (complete) {
+        // Publish final task status update
+        ec.publishFinalTaskUpdate(message: message);
+        print(
+          '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} finished with state: completed').blue()}',
+        );
+      } else {
+        // Publish an 'awaiting input' task update
+        final awaitingStatusUpdate = A2ATaskStatusUpdateEvent()
+          ..taskId = ec.taskId
+          ..contextId = ec.contextId
+          ..status = (A2ATaskStatus()
+            ..state = A2ATaskState.inputRequired
+            ..message = message
+            ..timestamp = A2AUtilities.getCurrentTimestamp())
+          ..end = false;
 
-      ec.publishFinalTaskUpdate(message: message);
-
-      print(
-        '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} finished with state: completed').blue()}',
-      );
+        ec.publishUserObject(awaitingStatusUpdate);
+        print(
+          '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} awaiting input with state: input required').blue()}',
+        );
+      }
     } catch (e) {
       print(
         '${Colorize('[MovieAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',

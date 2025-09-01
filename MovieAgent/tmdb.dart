@@ -35,7 +35,6 @@ Future<dynamic> callTmdbApi(String endpoint, String query) async {
         'language': 'en-GB',
         'page': '1',
       },
-
     );
     final response = await fetch(url.toString());
 
