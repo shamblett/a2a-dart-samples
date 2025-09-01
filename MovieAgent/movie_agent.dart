@@ -7,6 +7,7 @@
 
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
+import 'package:dartantic_ai/dartantic_ai.dart';
 import 'package:dartantic_interface/dartantic_interface.dart';
 
 import 'dartantic.dart';
@@ -94,44 +95,25 @@ class MovieAgent implements A2AAgentExecutor {
     ec.publishWorkingTaskUpdate(part: [textPart]);
 
     // 3. Run the prompt and the query
-    final chatPrompt = ChatMessage.system(prompt);
-    final chatMessage = ChatMessage.user(
-      (ec.userMessage.parts?.first as A2ATextPart).text,
-    );
     try {
-      final responses = chatModel.sendStream([chatPrompt, chatMessage]);
-      var responseText = '';
-      await for (final response in responses) {
-        for (final message in response.messages) {
-          print(
-            '${Colorize('[MovieAgent] Tool results ${message.hasToolResults}').blue()}',
-          );
-          print(
-            '${Colorize('[MovieAgent] Tool calls ${message.toolCalls}').blue()}',
-          );
-          for (final toolCall in message.toolCalls) {
-            print(
-              '${Colorize('[MovieAgent] Tool call id ${toolCall.id}').blue()}',
-            );
-            print(
-              '${Colorize('[MovieAgent] Tool call name ${toolCall.name}').blue()}',
-            );
-            print(
-              '${Colorize('[MovieAgent] Tool call result ${toolCall.result}').blue()}',
-            );
-            print(
-              '${Colorize('[MovieAgent] Tool call arguments ${toolCall.arguments}').blue()}',
-            );
-          }
-          for (final toolPart in message.toolCalls) {
-            //TODO This is wrong but we can at least inspect the query parameters
-            responseText += ' ${toolPart.arguments?['query']}';
-          }
-        }
-      }
+    final agent = Agent(
+      'google:gemini-2.0-flash',
+      tools: [searchMovies, searchPeople],
+    );
+
+    String responseText = '';
+    final question = (ec.userMessage.parts?.first as A2ATextPart).text;
+    final stream = agent.sendStream(question,
+      history: [
+        ChatMessage.system(prompt),
+      ],
+    );
+    await for (final chunk in stream) {
       print(
-        '${Colorize('[MovieAgent] Prompt Response $responseText)').blue()}',
+        '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
       );
+      responseText += chunk.output;
+    }
 
       // Check for request cancellation
       if (ec.isTaskCancelled) {
@@ -141,15 +123,6 @@ class MovieAgent implements A2AAgentExecutor {
         ec.publishCancelTaskUpdate();
         return;
       }
-
-      // 4. Publish the result as an artifact
-      final artifactMessage = ec.createTextPart(responseText);
-      final artifact = ec.createArtifact(
-        ec.v4Uuid,
-        name: 'Movie Agent Response',
-        parts: [artifactMessage],
-      );
-      ec.publishArtifactUpdate(artifact, lastChunk: true);
 
       // 5. Publish final task status update
       final modelResponse = ec.createTextPart(responseText);
