@@ -135,7 +135,8 @@ class MovieAgent implements A2AAgentExecutor {
         responseLines.add(chunk.output);
       }
 
-      // Assemble the response and check for completion from Gemini
+      // Assemble the response chunks into a text line and check for
+      // completion from Gemini
       bool complete = false; // True if the query is completed
       for (final line in responseLines) {
         if (line.isEmpty) {
@@ -157,17 +158,8 @@ class MovieAgent implements A2AAgentExecutor {
           '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} finished with state: completed').blue()}',
         );
       } else {
-        // Publish an 'awaiting input' task update
-        final awaitingStatusUpdate = A2ATaskStatusUpdateEvent()
-          ..taskId = ec.taskId
-          ..contextId = ec.contextId
-          ..status = (A2ATaskStatus()
-            ..state = A2ATaskState.inputRequired
-            ..message = message
-            ..timestamp = A2AUtilities.getCurrentTimestamp())
-          ..end = false;
-
-        ec.publishUserObject(awaitingStatusUpdate);
+        // Not complete, assume input required.
+        ec.publishInputRequiredTaskUpdate(message: message);
         print(
           '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} awaiting input with state: input required').blue()}',
         );
