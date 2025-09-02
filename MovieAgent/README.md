@@ -13,3 +13,6 @@ To run the agent simply do a 'dart pub get' followed by running
 the movie_agent.dart file i.e. 'dart run movie_agent.dart'
 
 The agent will start on `http://localhost:41241`.
+
+See the comment at the top of the containerfile for instructions on how
+to build and run the agent as a podman container.
