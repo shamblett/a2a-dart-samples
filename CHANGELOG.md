@@ -1,6 +1,6 @@
 # 1.0.2
 Added the movie agent container file
-- [Issue 2](https://github.com/shamblett/a2a-dart-samples/issues/2)
+- [Issue 3](https://github.com/shamblett/a2a-dart-samples/issues/3)
 
 # 1.0.1
 Added the movie agent
