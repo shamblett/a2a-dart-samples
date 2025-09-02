@@ -5,8 +5,6 @@
 * Copyright :  S.Hamblett
 */
 
-import 'package:a2a/a2a.dart';
-
 final prompt =
     '{{role "system_instruction"}} '
     'You are an expert editor that can proof-read and polish content. '

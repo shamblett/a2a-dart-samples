@@ -13,8 +13,7 @@ import 'package:dartantic_ai/dartantic_ai.dart';
 import 'package:dartantic_interface/dartantic_interface.dart';
 
 import 'config.dart';
-import 'dartantic.dart';
-import 'movie_agent_prompt.dart';
+import 'content_editor_prompt.dart';
 
 /// The Content Editor A2A Sample
 ///
@@ -25,20 +24,18 @@ import 'movie_agent_prompt.dart';
 // Agent Card
 final movieAgentCard = A2AAgentCard()
   ..name = 'Content Editor Agent'
-  ..description =
-      'An agent that can proof-read and polish content.'
+  ..description = 'An agent that can proof-read and polish content.'
   ..url = 'http://localhost:10003/'
   ..agentProvider = (A2AAgentProvider()
     ..organization = 'A2A Dart Samples'
     ..url = 'https://github.com/shamblett/a2a-dart-samples')
   ..version = '1.0.0'
-  ..capabilities =
-      (A2AAgentCapabilities()
-        ..streaming =
-            true // Supports streaming
-        ..pushNotifications =
-            false //  Assuming not implemented for this agent yet
-        ..stateTransitionHistory = false)
+  ..capabilities = (A2AAgentCapabilities()
+    ..streaming =
+        true // Supports streaming
+    ..pushNotifications =
+        false //  Assuming not implemented for this agent yet
+    ..stateTransitionHistory = false)
   ..securitySchemes =
       null // Or define actual security schemes if any
   ..security = null
@@ -48,11 +45,10 @@ final movieAgentCard = A2AAgentCard()
     A2AAgentSkill()
       ..id = 'editor'
       ..name = 'Edits content'
-      ..description =
-          'Edits content by proof-reading and polishing'
+      ..description = 'Edits content by proof-reading and polishing'
       ..tags = ['writer']
       ..examples = [
-        'Edit the following article, make sure it has a professional tone'
+        'Edit the following article, make sure it has a professional tone',
       ]
       ..inputModes = ['text/plain']
       ..outputModes = ['text/plain'],
@@ -60,16 +56,15 @@ final movieAgentCard = A2AAgentCard()
   ..supportsAuthenticatedExtendedCard = false;
 
 /// MovieAgentExecutor implements the agent's core logic.
-class MovieAgent implements A2AAgentExecutor {
+class ContentEditor implements A2AAgentExecutor {
   /// Executor construction helper.
   /// Late is OK here, a task cannot be cancelled until it has been created,
   /// which is done in the execute method.
   late A2AExecutorConstructor ec;
 
-  MovieAgent() {
+  ContentEditor() {
     // Set the API keys from their environment variables
     googleApIKey = Platform.environment['GEMINI_API_KEY']!;
-    tmdbApiKey = Platform.environment['TMDB_API_KEY']!;
   }
 
   @override
@@ -85,7 +80,7 @@ class MovieAgent implements A2AAgentExecutor {
     ec = A2AExecutorConstructor(requestContext, eventBus);
 
     print(
-      '${Colorize('[MovieAgent] Processing message ${ec.userMessage.messageId} '
+      '${Colorize('[ContentEditor] Processing message ${ec.userMessage.messageId} '
       'for task ${ec.taskId} (context: ${ec.contextId})').blue()}',
     );
 
@@ -95,15 +90,12 @@ class MovieAgent implements A2AAgentExecutor {
     }
 
     // 2. Publish "working" status update
-    final textPart = ec.createTextPart('Processing your question, hang tight!');
+    final textPart = ec.createTextPart('Processing your content, hang tight!');
     ec.publishWorkingTaskUpdate(part: [textPart]);
 
     // 3. Run the prompt and the query
     try {
-      final agent = Agent(
-        'google:gemini-2.0-flash',
-        tools: [searchMovies, searchPeople],
-      );
+      final agent = Agent('google:gemini-2.0-flash');
 
       String responseText = '';
       final question = (ec.userMessage.parts?.first as A2ATextPart).text;
@@ -125,43 +117,29 @@ class MovieAgent implements A2AAgentExecutor {
       final responseLines = <String>[];
       await for (final chunk in stream) {
         print(
-          '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
+          '${Colorize('[ContentEditor] Chunk output ${chunk.output}').blue()}',
         );
         responseLines.add(chunk.output);
       }
 
-      // Assemble the response chunks into a text line and check for
-      // completion from Gemini
-      bool complete = false; // True if the query is completed
+      // Assemble the response chunks into a text output
       for (final line in responseLines) {
         if (line.isEmpty) {
           continue;
         }
-        if (line.contains('COMPLETED')) {
-          complete = true;
-        }
         responseText += line;
       }
 
-      // Check for completed or awaiting input
+      // Final task response
       final modelResponse = ec.createTextPart(responseText);
       final message = ec.createMessage(ec.v4Uuid, parts: [modelResponse]);
-      if (complete) {
-        // Publish final task status update
-        ec.publishFinalTaskUpdate(message: message);
-        print(
-          '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} finished with state: completed').blue()}',
-        );
-      } else {
-        // Not complete, assume input required.
-        ec.publishInputRequiredTaskUpdate(message: message);
-        print(
-          '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} awaiting input with state: input required').blue()}',
-        );
-      }
+      ec.publishFinalTaskUpdate(message: message);
+      print(
+        '${Colorize('[ContentEditorExecutor] Task ${ec.taskId} finished with state: completed').blue()}',
+      );
     } catch (e) {
       print(
-        '${Colorize('[MovieAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
+        '${Colorize('[ContentEditorExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
       );
 
       final errorResponse = ec.createTextPart('Agent error: $e');
@@ -182,7 +160,7 @@ final mwLogging = ((Request req, Response res, NextFunction next) {
 void main() {
   /// Initialise the required server components for the express application
   final taskStore = A2AInMemoryTaskStore();
-  final agentExecutor = MovieAgent();
+  final agentExecutor = ContentEditor();
   final eventBusManager = A2ADefaultExecutionEventBusManager();
   final requestHandler = A2ADefaultRequestHandler(
     movieAgentCard,
@@ -207,15 +185,17 @@ void main() {
   // A2AServerDebug.on();
 
   // Start listening
-  const port = 41241;
+  const port = 10003;
   expressApp.listen(port, () {
     print(
-      '${Colorize('[MovieAgent] Server using new framework started on http://localhost:$port').blue()}',
+      '${Colorize('[ContentEditor] Server using new framework started on http://localhost:$port').blue()}',
     );
     print(
-      '${Colorize('[MovieAgent] Agent Card: http://localhost:$port}/.well-known/agent-card.json').blue()}',
+      '${Colorize('[ContentEditor] Agent Card: http://localhost:$port}/.well-known/agent-card.json').blue()}',
     );
-    print('${Colorize('[MovieAgent] Press Ctrl+C to stop the server').blue()}');
+    print(
+      '${Colorize('[ContentEditor] Press Ctrl+C to stop the server').blue()}',
+    );
     print('');
   });
 }
