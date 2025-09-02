@@ -1,5 +1,5 @@
 # Build with  'podman build . -f containerfile -t a2a-movie-agent'
-# Run with 'podman run -p 41241:41241 a2a-movie-agent'
+# Run with 'podman run -p 41241:41241 -e GEMINI_API_KEY='<key>' -e TMDB_API_KEY='<key>' a2a-movie-agent'
 FROM dart:3.9.2
 WORKDIR /app
 COPY . .
