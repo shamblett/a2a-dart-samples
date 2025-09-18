@@ -8,4 +8,3 @@
 // Api keys, define these how you wish, e.g. in env vars etc,
 // and update your code as appropriate
 String googleApIKey = '';
-String tmdbApiKey = '';

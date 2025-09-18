@@ -14,19 +14,19 @@ import 'package:dartantic_interface/dartantic_interface.dart';
 
 import 'config.dart';
 import 'dartantic.dart';
-import 'coder_prompt.dart';
+import 'coder_agent_prompt.dart';
 
-/// The Movie Agent A2A Sample
+/// The Coder A2A Sample
 ///
 /// Status information is printed to the console, blue is for information,
 /// yellow for an event that has occurred and red for failure. If you enable
 /// server debug this output will be in green.
 
 // Agent Card
-final movieAgentCard = A2AAgentCard()
-  ..name = 'Movie Agent'
+final coderAgentCard = A2AAgentCard()
+  ..name = 'Coder Agent'
   ..description =
-      'An agent that can answer questions about movies and actors using TMDB.'
+      'A simple code writing assistant agent.'
   ..url = 'http://localhost:41241/'
   ..agentProvider = (A2AAgentProvider()
     ..organization = 'A2A Dart Samples'
@@ -46,35 +46,29 @@ final movieAgentCard = A2AAgentCard()
   ..defaultOutputModes = ['text/plain', 'task-status']
   ..skills = ([
     A2AAgentSkill()
-      ..id = 'general_movie_chat'
-      ..name = 'General Movie Chat'
+      ..id = 'code_writing'
+      ..name = 'Code generation'
       ..description =
-          'Answer general questions or chat about movies, actors, directors.'
-      ..tags = ['movies', 'actors', 'directors']
+          'Acts as a simple code writing assistant'
+      ..tags = ['code', 'assistant']
       ..examples = [
-        'Tell me about the plot of Inception.',
-        'Recommend a good sci-fi movie.',
-        'Who directed The Matrix?',
-        'What other movies has Scarlett Johansson been in?',
-        'Find action movies starring Keanu Reeves',
-        'Which came out first, Jurassic Park or Terminator 2?',
+        'Generate code to calculate the first 6 terms in the Fibonacci sequence',
       ]
       ..inputModes = ['text/plain']
       ..outputModes = ['text/plain', 'task-status'],
   ])
   ..supportsAuthenticatedExtendedCard = false;
 
-/// MovieAgentExecutor implements the agent's core logic.
-class MovieAgent implements A2AAgentExecutor {
+/// CoderExecutor implements the agent's core logic.
+class CoderAgent implements A2AAgentExecutor {
   /// Executor construction helper.
   /// Late is OK here, a task cannot be cancelled until it has been created,
   /// which is done in the execute method.
   late A2AExecutorConstructor ec;
 
-  MovieAgent() {
+  CoderAgent() {
     // Set the API keys from their environment variables
     googleApIKey = Platform.environment['GEMINI_API_KEY']!;
-    tmdbApiKey = Platform.environment['TMDB_API_KEY']!;
   }
 
   @override
@@ -187,10 +181,10 @@ final mwLogging = ((Request req, Response res, NextFunction next) {
 void main() {
   /// Initialise the required server components for the express application
   final taskStore = A2AInMemoryTaskStore();
-  final agentExecutor = MovieAgent();
+  final agentExecutor = CoderAgent();
   final eventBusManager = A2ADefaultExecutionEventBusManager();
   final requestHandler = A2ADefaultRequestHandler(
-    movieAgentCard,
+    coderAgentCard,
     taskStore,
     agentExecutor,
     eventBusManager,
