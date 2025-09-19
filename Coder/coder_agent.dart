@@ -6,6 +6,7 @@
 */
 
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
@@ -24,8 +25,7 @@ import 'coder_agent_prompt.dart';
 // Agent Card
 final coderAgentCard = A2AAgentCard()
   ..name = 'Coder Agent'
-  ..description =
-      'A simple code writing assistant agent for the Dart language.'
+  ..description = 'A simple code writing assistant agent for the Dart language.'
   ..url = 'http://localhost:41241/'
   ..agentProvider = (A2AAgentProvider()
     ..organization = 'A2A Dart Samples'
@@ -47,8 +47,7 @@ final coderAgentCard = A2AAgentCard()
     A2AAgentSkill()
       ..id = 'code_writing'
       ..name = 'Code generation'
-      ..description =
-          'Acts as a simple Dart code writing assistant'
+      ..description = 'Acts as a simple Dart code writing assistant'
       ..tags = ['code', 'assistant']
       ..examples = [
         'Generate code to calculate the first 6 terms in the Fibonacci sequence',
@@ -98,11 +97,8 @@ class CoderAgent implements A2AAgentExecutor {
 
     // 3. Run the prompt and the query
     try {
-      final agent = Agent(
-        'google:gemini-2.0-flash',
-      );
+      final agent = Agent('google:gemini-2.0-flash');
 
-      String responseText = '';
       final question = (ec.userMessage.parts?.first as A2ATextPart).text;
       final stream = agent.sendStream(
         question,
@@ -119,19 +115,41 @@ class CoderAgent implements A2AAgentExecutor {
       }
 
       // Get the response
+      final a2aParts = <A2APart>[];
       await for (final chunk in stream) {
         print(
           '${Colorize('[CoderAgent] Chunk output ${chunk.output}').blue()}',
         );
 
-        // Process the response, extract the text and files into separate artifacts
+        // Process the response, extract the text and files into A2A parts
         await for (final chunk in stream) {
           print(
-            '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
+            '${Colorize('[CoderAgent] Chunk output ${chunk.output}').blue()}',
           );
+          for (final message in chunk.messages) {
+            if (message.text.isNotEmpty) {
+              a2aParts.add(A2ATextPart()..text = message.text);
+            }
+            for (final part in message.parts) {
+              if (part is TextPart) {
+                a2aParts.add(A2ATextPart()..text = part.text);
+              }
+              if (part is DataPart) {
+                a2aParts.add(
+                  (A2AFilePart()
+                    ..file = (A2AFileWithBytes()
+                      ..name = part.name ?? 'noname'
+                      ..bytes = utf8.decode(part.bytes))),
+                );
+              }
+            }
+          }
         }
-
       }
+
+      // Send the response back to the client as a series of artifacts
+      int artifactCount = 1;
+      for (final part in a2aParts) {}
     } catch (e) {
       print(
         '${Colorize('[CoderAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
