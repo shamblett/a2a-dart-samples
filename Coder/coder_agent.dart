@@ -147,9 +147,28 @@ class CoderAgent implements A2AAgentExecutor {
         }
       }
 
-      // Send the response back to the client as a series of artifacts
-      int artifactCount = 1;
-      for (final part in a2aParts) {}
+      // Send the response back to the client as an artifact with the parts in order
+      // preamble, files, postamble
+      A2APart preamble = A2APart();
+      A2APart postamble = A2APart();
+      var a2aFileParts = <A2APart>[];
+      for (final part in a2aParts) {
+        if (part is A2ATextPart ) {
+          if ( part.text.contains('PREAMBLE-END') ) {
+            preamble = part;
+          }
+          if ( part.text.contains('POSTAMBLE-END') ) {
+            postamble = part;
+          }
+        }
+        if ( part is A2AFilePart ) {
+          a2aFileParts.add(part);
+        }
+      }
+      final artifact = A2AArtifact()
+      ..name = 'coder-response-parts'
+      ..artifactId = 'coder=artifact-1'
+      ..parts = [preamble].expand(a2aFileParts).toList().cast<A2APart>().add(postamble);
     } catch (e) {
       print(
         '${Colorize('[CoderAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
