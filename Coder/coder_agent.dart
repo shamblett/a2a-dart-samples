@@ -116,32 +116,26 @@ class CoderAgent implements A2AAgentExecutor {
 
       // Get the response
       final a2aParts = <A2APart>[];
+      // Process the response, extract the text and files into A2A parts
       await for (final chunk in stream) {
         print(
           '${Colorize('[CoderAgent] Chunk output ${chunk.output}').blue()}',
         );
-
-        // Process the response, extract the text and files into A2A parts
-        await for (final chunk in stream) {
-          print(
-            '${Colorize('[CoderAgent] Chunk output ${chunk.output}').blue()}',
-          );
-          for (final message in chunk.messages) {
-            if (message.text.isNotEmpty) {
-              a2aParts.add(A2ATextPart()..text = message.text);
+        for (final message in chunk.messages) {
+          if (message.text.isNotEmpty) {
+            a2aParts.add(A2ATextPart()..text = message.text);
+          }
+          for (final part in message.parts) {
+            if (part is TextPart) {
+              a2aParts.add(A2ATextPart()..text = part.text);
             }
-            for (final part in message.parts) {
-              if (part is TextPart) {
-                a2aParts.add(A2ATextPart()..text = part.text);
-              }
-              if (part is DataPart) {
-                a2aParts.add(
-                  (A2AFilePart()
-                    ..file = (A2AFileWithBytes()
-                      ..name = part.name ?? 'noname'
-                      ..bytes = utf8.decode(part.bytes))),
-                );
-              }
+            if (part is DataPart) {
+              a2aParts.add(
+                (A2AFilePart()
+                  ..file = (A2AFileWithBytes()
+                    ..name = part.name ?? 'noname'
+                    ..bytes = utf8.decode(part.bytes))),
+              );
             }
           }
         }
