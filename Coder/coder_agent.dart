@@ -147,8 +147,8 @@ class CoderAgent implements A2AAgentExecutor {
         }
       }
 
-      // Send the response back to the client as an artifact with the parts in order
-      // preamble, files, postamble
+      // Send the complete task response back to the client as an artifact with
+      // the parts in order preamble, files, postamble
       A2APart preamble = A2APart();
       A2APart postamble = A2APart();
       var a2aFileParts = <A2APart>[];
@@ -172,6 +172,16 @@ class CoderAgent implements A2AAgentExecutor {
         ..name = 'coder-response-parts'
         ..artifactId = 'coder=artifact-1'
         ..parts = partsList;
+
+      final completeTask = A2ATask()
+        ..status = (A2ATaskStatus()
+          ..state = A2ATaskState.completed
+          ..timestamp = A2AUtilities.getCurrentTimestamp())
+        ..artifacts = [artifact]
+        ..contextId = ec.contextId
+        ..id = ec.taskId;
+
+      ec.publishUserObject(completeTask);
     } catch (e) {
       print(
         '${Colorize('[CoderAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',

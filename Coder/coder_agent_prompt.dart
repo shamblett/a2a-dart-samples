@@ -5,8 +5,6 @@
 * Copyright :  S.Hamblett
 */
 
-import 'package:a2a/a2a.dart';
-
 final prompt =
     '{{role "system"}} '
     'You are a code generation expert in the Dart language and its package ecosystem. '

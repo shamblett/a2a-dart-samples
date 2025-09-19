@@ -2,10 +2,13 @@
 
 A simple code assistant agent.
 
-It uses the Gemini gemini-2.0-flash model to implement a simple 
+It uses the gemini-2.0-flash model to implement a simple 
 code-writing agent that emits full code files as artifacts.
 
 The code generated is in the Dart language.
+
+The final task update contains an artifact field with the parts in the following order :-
+textual preamble, file parts, textual postamble.
 
 You will an API key for Gemini set in the following environment variable :-
 
