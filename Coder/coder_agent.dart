@@ -13,7 +13,6 @@ import 'package:dartantic_ai/dartantic_ai.dart';
 import 'package:dartantic_interface/dartantic_interface.dart';
 
 import 'config.dart';
-import 'dartantic.dart';
 import 'coder_agent_prompt.dart';
 
 /// The Coder A2A Sample
@@ -26,7 +25,7 @@ import 'coder_agent_prompt.dart';
 final coderAgentCard = A2AAgentCard()
   ..name = 'Coder Agent'
   ..description =
-      'A simple code writing assistant agent.'
+      'A simple code writing assistant agent for the Dart language.'
   ..url = 'http://localhost:41241/'
   ..agentProvider = (A2AAgentProvider()
     ..organization = 'A2A Dart Samples'
@@ -49,7 +48,7 @@ final coderAgentCard = A2AAgentCard()
       ..id = 'code_writing'
       ..name = 'Code generation'
       ..description =
-          'Acts as a simple code writing assistant'
+          'Acts as a simple Dart code writing assistant'
       ..tags = ['code', 'assistant']
       ..examples = [
         'Generate code to calculate the first 6 terms in the Fibonacci sequence',
@@ -84,7 +83,7 @@ class CoderAgent implements A2AAgentExecutor {
     ec = A2AExecutorConstructor(requestContext, eventBus);
 
     print(
-      '${Colorize('[MovieAgent] Processing message ${ec.userMessage.messageId} '
+      '${Colorize('[CoderAgent] Processing message ${ec.userMessage.messageId} '
       'for task ${ec.taskId} (context: ${ec.contextId})').blue()}',
     );
 
@@ -101,7 +100,6 @@ class CoderAgent implements A2AAgentExecutor {
     try {
       final agent = Agent(
         'google:gemini-2.0-flash',
-        tools: [searchMovies, searchPeople],
       );
 
       String responseText = '';
@@ -121,46 +119,22 @@ class CoderAgent implements A2AAgentExecutor {
       }
 
       // Get the response
-      final responseLines = <String>[];
       await for (final chunk in stream) {
         print(
-          '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
+          '${Colorize('[CoderAgent] Chunk output ${chunk.output}').blue()}',
         );
-        responseLines.add(chunk.output);
-      }
 
-      // Assemble the response chunks into a text line and check for
-      // completion from Gemini
-      bool complete = false; // True if the query is completed
-      for (final line in responseLines) {
-        if (line.isEmpty) {
-          continue;
+        // Process the response, extract the text and files into separate artifacts
+        await for (final chunk in stream) {
+          print(
+            '${Colorize('[MovieAgent] Chunk output ${chunk.output}').blue()}',
+          );
         }
-        if (line.contains('COMPLETED')) {
-          complete = true;
-        }
-        responseText += line;
-      }
 
-      // Check for completed or awaiting input
-      final modelResponse = ec.createTextPart(responseText);
-      final message = ec.createMessage(ec.v4Uuid, parts: [modelResponse]);
-      if (complete) {
-        // Publish final task status update
-        ec.publishFinalTaskUpdate(message: message);
-        print(
-          '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} finished with state: completed').blue()}',
-        );
-      } else {
-        // Not complete, assume input required.
-        ec.publishInputRequiredTaskUpdate(message: message);
-        print(
-          '${Colorize('[MovieAgentExecutor] Task ${ec.taskId} awaiting input with state: input required').blue()}',
-        );
       }
     } catch (e) {
       print(
-        '${Colorize('[MovieAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
+        '${Colorize('[CoderAgentExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
       );
 
       final errorResponse = ec.createTextPart('Agent error: $e');
@@ -209,12 +183,12 @@ void main() {
   const port = 41241;
   expressApp.listen(port, () {
     print(
-      '${Colorize('[MovieAgent] Server using new framework started on http://localhost:$port').blue()}',
+      '${Colorize('[CoderAgent] Server using new framework started on http://localhost:$port').blue()}',
     );
     print(
-      '${Colorize('[MovieAgent] Agent Card: http://localhost:$port}/.well-known/agent-card.json').blue()}',
+      '${Colorize('[CoderAgent] Agent Card: http://localhost:$port}/.well-known/agent-card.json').blue()}',
     );
-    print('${Colorize('[MovieAgent] Press Ctrl+C to stop the server').blue()}');
+    print('${Colorize('[CoderAgent] Press Ctrl+C to stop the server').blue()}');
     print('');
   });
 }
