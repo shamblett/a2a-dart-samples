@@ -12,11 +12,8 @@ environment:
 dependencies:
     colorize: '^3.0.0'
     a2a: '^2.3.3'
-    dartantic_ai: '^1.0.7'
-    dartantic_interface: '^1.0.2'
-    json_schema: '^5.2.1'
-    oxy: '^0.0.3'
     uuid: '^4.5.1'
+    mqtt_client: '^10.11.1'
 
 dev_dependencies:
   lints: '^6.0.0'
