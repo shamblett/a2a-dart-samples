@@ -15,7 +15,10 @@ class MqttMcpBridge extends A2AMCPBridge {
   // MQTT manager
   final _mqttManager = MqttManager();
 
-  MqttMcpBridge() : super() {}
+  MqttMcpBridge() : super() {
+    // Remove the tools we don't need
+    _mcpServer.
+  }
 }
 
 // Main server
