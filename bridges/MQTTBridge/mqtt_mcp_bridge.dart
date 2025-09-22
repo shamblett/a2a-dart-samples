@@ -7,25 +7,13 @@
 
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:mqtt_client/mqtt_client.dart';
+import './mqtt_manager.dart';
 
 /// MQTT Bridge
 ///
 class MqttMcpBridge extends A2AMCPBridge {
-  // Broker URL
-  String _serverUrl = '';
-
-  // Client Identifier
-  String _clientIdentifier = '';
-
-  late final MqttServerClient _client;
-
-  // Subscribed topics
-  List<String> _subscribedTopics = [];
-
-  // Received messages
-  List<MqttPublishMessage> _receivedMessages = [];
+  // MQTT manager
+  final _mqttManager = MqttManager();
 
   MqttMcpBridge() : super() {}
 }
