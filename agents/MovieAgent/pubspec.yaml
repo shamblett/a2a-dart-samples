@@ -1,6 +1,6 @@
 name: movie_agent
 description: An implementation of the Google A2A Movie Agent sample
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/shamblett/a2a-dart-samples/MovieAgent
 publish_to: none
 funding:
@@ -11,7 +11,7 @@ environment:
 
 dependencies:
     colorize: '^3.0.0'
-    a2a: '^2.3.3'
+    a2a: '^3.0.0'
     dartantic_ai: '^1.0.7'
     dartantic_interface: '^1.0.2'
     json_schema: '^5.2.1'
@@ -20,4 +20,3 @@ dependencies:
 
 dev_dependencies:
   lints: '^6.0.0'
-  dart_code_metrics_presets: '^2.25.0'
