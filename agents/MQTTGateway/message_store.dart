@@ -6,3 +6,10 @@
 */
 
 import 'package:colorize/colorize.dart';
+
+///
+/// MQTT message storage and retrieval
+///
+class MessageStore {
+  MessageStore();
+}

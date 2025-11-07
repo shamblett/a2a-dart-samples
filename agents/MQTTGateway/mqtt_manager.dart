@@ -6,3 +6,10 @@
 */
 
 import 'package:colorize/colorize.dart';
+
+///
+/// MQTT client management.
+///
+class MqttManager {
+  MqttManager();
+}

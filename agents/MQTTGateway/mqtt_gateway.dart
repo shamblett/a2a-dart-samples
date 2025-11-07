@@ -8,6 +8,9 @@
 import 'package:a2a/a2a.dart';
 import 'package:colorize/colorize.dart';
 
+import 'mqtt_manager.dart';
+import 'message_store.dart';
+
 /// The MQTT Gateway A2A Sample
 ///
 /// Status information is printed to the console, blue is for information,
@@ -56,7 +59,13 @@ class MqttGateway implements A2AAgentExecutor {
   /// which is done in the execute method.
   late A2AExecutorConstructor ec;
 
-  MqttGateway();
+  // MQTT client manager
+  final MqttManager _mqttManager;
+
+  // Message store
+  final MessageStore _messageStore;
+
+  MqttGateway() : _mqttManager = MqttManager(), _messageStore = MessageStore();
 
   @override
   Future<void> cancelTask(String taskId, A2AExecutionEventBus eventBus) async =>
