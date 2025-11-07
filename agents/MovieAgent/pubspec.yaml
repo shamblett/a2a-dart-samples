@@ -1,7 +1,7 @@
 name: movie_agent
 description: An implementation of the Google A2A Movie Agent sample
 version: 1.0.1
-repository: https://github.com/shamblett/a2a-dart-samples/MovieAgent
+repository: https://github.com/shamblett/a2a-dart-samples/agents/MovieAgent
 publish_to: none
 funding:
   - https://www.darticulate.com/#funding

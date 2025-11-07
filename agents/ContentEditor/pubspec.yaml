@@ -1,7 +1,7 @@
 name: content_editor
 description: An implementation of the Google A2A Content Editor sample
 version: 1.0.1
-repository: https://github.com/shamblett/a2a-dart-samples/ContentEditor
+repository: https://github.com/shamblett/a2a-dart-samples/agents/ContentEditor
 publish_to: none
 funding:
   - https://www.darticulate.com/#funding

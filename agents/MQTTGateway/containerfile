@@ -1,0 +1,9 @@
+# Build with  'podman build . -f containerfile -t a2a_mqtt_gateway_agent'
+# Run with 'podman run -p 10004:10004 -e GEMINI_API_KEY='<key>'
+FROM dart:3.9.2
+WORKDIR /app
+COPY . .
+RUN dart pub get
+RUN dart compile exe mqtt_gateway.dart
+EXPOSE 10004
+ENTRYPOINT ["/app/mqtt_gateway.exe"]
