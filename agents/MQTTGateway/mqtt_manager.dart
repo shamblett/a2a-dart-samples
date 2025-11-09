@@ -6,6 +6,7 @@
 */
 
 import 'package:colorize/colorize.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 
 ///
 /// MQTT client management.
