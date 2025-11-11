@@ -5,14 +5,15 @@
 * Copyright :  S.Hamblett
 */
 
+import 'package:a2a/a2a.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 ///
-/// MQTT message
+/// MQTT message wrapper.
 ///
 class Message {
   // Timestamp
-  final String _timestamp;
+  String _timestamp = '';
 
   // Publish message
   final MqttPublishMessage _publishMessage;
@@ -24,5 +25,7 @@ class Message {
   String get payload =>
       MqttPublishPayload.bytesToStringAsString(_publishMessage.payload.message);
 
-  Message(this._timestamp, this._publishMessage);
+  Message(this._publishMessage) {
+    _timestamp = A2AUtilities.getCurrentTimestamp();
+  }
 }

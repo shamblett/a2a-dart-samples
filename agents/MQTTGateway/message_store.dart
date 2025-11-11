@@ -7,26 +7,27 @@
 
 import 'dart:collection';
 
-import 'package:mqtt_client/mqtt_client.dart';
+import 'message.dart';
 
 ///
-/// MQTT message storage and retrieval
+/// Message storage and retrieval
 ///
 class MessageStore {
   // Message queue indexed by topic
-  final Map<String, Queue<MqttPublishMessage>> _messages = {};
+  final Map<String, Queue<Message>> _messages = {};
   MessageStore();
 
+  /// Does a topic have messages
+  bool hasMessages(String topic) =>
+      _messages[topic] != null ? _messages[topic]!.isNotEmpty : false;
+
   /// Get the next message for a topic.
-  MqttPublishMessage? getMessage(String topic) =>
-      _messages[topic]?.removeFirst();
+  Message? getMessage(String topic) =>
+      hasMessages(topic) ? _messages[topic]?.removeFirst() : null;
 
   /// Get all messages for a topic
-  List<MqttPublishMessage>? getMessages(String topic) =>
-      _messages[topic]?.toList();
-
-  /// Does a topic have messages
-  bool hasMessages(String topic) => _messages[topic] != null;
+  List<Message> getMessages(String topic) =>
+      _messages[topic] != null ? _messages[topic]!.toList() : [];
 
   /// Clear all messages from a topic
   void clearTopic(String topic) {
@@ -34,4 +35,8 @@ class MessageStore {
       _messages[topic]?.clear();
     }
   }
+
+  /// Add a message
+  void addMessage(String topic, Message message) =>
+      _messages[topic]?.add(message);
 }
