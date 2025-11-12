@@ -26,8 +26,14 @@ class MessageStore {
       hasMessages(topic) ? _messages[topic]?.removeFirst() : null;
 
   /// Get all messages for a topic
-  List<Message> getMessages(String topic) =>
-      _messages[topic] != null ? _messages[topic]!.toList() : [];
+  List<Message> getMessages(String topic) {
+    List<Message> ret = [];
+    if (hasMessages(topic)) {
+      ret = _messages[topic]!.toList();
+      _messages[topic]!.clear();
+    }
+    return ret;
+  }
 
   /// Clear all messages from a topic
   void clearTopic(String topic) {
@@ -37,6 +43,10 @@ class MessageStore {
   }
 
   /// Add a message
-  void addMessage(String topic, Message message) =>
-      _messages[topic]?.add(message);
+  void addMessage(String topic, Message message) {
+    if (_messages[topic] == null) {
+      _messages[topic] = Queue<Message>();
+    }
+    _messages[topic]?.add(message);
+  }
 }

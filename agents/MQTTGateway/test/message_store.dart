@@ -28,5 +28,48 @@ void main() {
       expect(store.getMessage('topic'), isNull);
       expect(store.getMessages('topic'), []);
     });
+    test('API - single message', () {
+      final store = MessageStore();
+      final message = Message(
+        MqttPublishMessage()..withQos(MqttQos.exactlyOnce),
+      );
+      store.addMessage('topic1', message);
+      expect(store.hasMessages('topic1'), isTrue);
+      final storeMessage = store.getMessage('topic1');
+      expect(store.hasMessages('topic1'), isFalse);
+      expect(storeMessage, isNotNull);
+      expect(storeMessage?.timestamp.isNotEmpty, isTrue);
+      expect(storeMessage?.publishMessage.header?.qos, MqttQos.exactlyOnce);
+      store.addMessage('topic1', message);
+      expect(store.hasMessages('topic1'), isTrue);
+      store.clearTopic('topic1');
+      expect(store.hasMessages('topic1'), isFalse);
+    });
+    test('API - all messages', () {
+      final store = MessageStore();
+      final message1 = Message(
+        MqttPublishMessage()..withQos(MqttQos.exactlyOnce),
+      );
+      final message2 = Message(
+        MqttPublishMessage()..withQos(MqttQos.atLeastOnce),
+      );
+      final message3 = Message(
+        MqttPublishMessage()..withQos(MqttQos.atMostOnce),
+      );
+      store.addMessage('topic1', message1);
+      store.addMessage('topic1', message2);
+      store.addMessage('topic1', message3);
+      expect(store.hasMessages('topic1'), isTrue);
+      final storeMessages = store.getMessages('topic1');
+      expect(store.hasMessages('topic1'), isFalse);
+      expect(storeMessages.isNotEmpty, isTrue);
+      expect(storeMessages.length, 3);
+      expect(storeMessages[0].timestamp.isNotEmpty, isTrue);
+      expect(storeMessages[0].publishMessage.header?.qos, MqttQos.exactlyOnce);
+      expect(storeMessages[1].timestamp.isNotEmpty, isTrue);
+      expect(storeMessages[1].publishMessage.header?.qos, MqttQos.atLeastOnce);
+      expect(storeMessages[2].timestamp.isNotEmpty, isTrue);
+      expect(storeMessages[2].publishMessage.header?.qos, MqttQos.atMostOnce);
+    });
   });
 }
