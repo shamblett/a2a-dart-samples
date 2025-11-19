@@ -32,4 +32,4 @@ An example of a command to connect the gateway to a broker is :-
 Each command will report success or failure back to the user.
 
 A full description of each command and its parameters can be found in the 
-COMMANDS.md document.
+[PROTOCOL.md](https://github.com/shamblett/a2a-dart-samples/blob/main/agents/MQTTGateway/PROTOCOL.md) document.
