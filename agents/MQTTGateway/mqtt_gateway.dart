@@ -27,12 +27,14 @@ class MqttGateway implements A2AAgentExecutor {
   late A2AExecutorConstructor ec;
 
   // MQTT client manager
-  final MqttManager _mqttManager;
+  late MqttManager _mqttManager;
 
   // Message store
-  final MessageStore _messageStore;
+  final MessageStore _messageStore = MessageStore();
 
-  MqttGateway() : _mqttManager = MqttManager(), _messageStore = MessageStore();
+  MqttGateway() {
+    _mqttManager = MqttManager(_messageStore);
+  }
 
   @override
   Future<void> cancelTask(String taskId, A2AExecutionEventBus eventBus) async =>
