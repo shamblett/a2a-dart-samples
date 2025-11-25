@@ -47,7 +47,7 @@ class MqttManager {
     // Check if already connected
     if (_connected) {
       print(
-        '${Colorize('[MQTTGateway] MqttManager already connected, disconnect first').yellow()}',
+        '${Colorize('[MQTTGateway] MqttManager already connected, disconnect the client first').yellow()}',
       );
       return false;
     }
@@ -58,7 +58,7 @@ class MqttManager {
 
     // Connect the client
     print(
-      '${Colorize('[MQTTGateway] MqttManager connecting to broker at $_brokerUrl on port $_port').blue()}',
+      '${Colorize('[MQTTGateway] MqttManager connecting to broker at [$_brokerUrl] on port $_port').blue()}',
     );
     try {
       await _client.connect(userName, password);
@@ -71,7 +71,7 @@ class MqttManager {
     }
 
     // Check connection status
-    if (_client.connectionStatus!.state == MqttConnectionState.connected) {
+    if (_client.connectionStatus!.state != MqttConnectionState.connected) {
       print(
         '${Colorize('[MQTTGateway] MqttManager failed to connect, connection state is ${_client.connectionStatus!.state}').yellow()}',
       );
@@ -80,7 +80,7 @@ class MqttManager {
 
     // Connected
     print(
-      '${Colorize('[MQTTGateway] MqttManager connected to broker at $_brokerUrl on port $_port').blue()}',
+      '${Colorize('[MQTTGateway] MqttManager connected to broker at [$_brokerUrl] on port $_port').blue()}',
     );
     _connected = true;
     _listenForMessages();
@@ -91,13 +91,13 @@ class MqttManager {
   bool disconnect() {
     if (!_connected) {
       print(
-        '${Colorize('[MQTTGateway] MqttManager already disconnected from broker at $_brokerUrl on port $_port').blue()}',
+        '${Colorize('[MQTTGateway] MqttManager already disconnected from broker at [$_brokerUrl] on port $_port').yellow()}',
       );
       return true;
     }
     _client.disconnect();
     print(
-      '${Colorize('[MQTTGateway] MqttManager disconnected from broker at $_brokerUrl on port $_port').blue()}',
+      '${Colorize('[MQTTGateway] MqttManager disconnected from broker at [$_brokerUrl] on port $_port').blue()}',
     );
     _connected = false;
     return true;
