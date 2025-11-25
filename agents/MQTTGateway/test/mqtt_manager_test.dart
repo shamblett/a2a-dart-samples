@@ -84,6 +84,7 @@ void main() {
     expect(res, isTrue);
     res = mm.publish(topic2, t2Payload);
     expect(res, isTrue);
+    await Future.delayed(Duration(seconds: 1));
     expect(ms.hasMessages(topic1), isTrue);
     expect(ms.hasMessages(topic2), isTrue);
     final mess1 = ms.getMessages(topic1);
@@ -91,6 +92,8 @@ void main() {
     expect(mess1.first.payload, t1Payload);
     expect(mess2.first.payload, t2Payload);
     res = mm.unsubscribe(topic1);
+    expect(res, isTrue);
+    res = mm.unsubscribe(topic2);
     expect(res, isTrue);
     res = mm.disconnect();
     expect(res, isTrue);
