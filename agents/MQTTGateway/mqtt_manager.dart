@@ -107,34 +107,34 @@ class MqttManager {
   bool subscribe(String topic, [int qos = 0]) {
     if (!_connected) {
       print(
-        '${Colorize('[MQTTGateway] MqttManager disconnected, cannot subscribe to topic $topic').yellow()}',
+        '${Colorize('[MQTTGateway] MqttManager disconnected, cannot subscribe to topic [$topic]').yellow()}',
       );
       return false;
     }
     final sub = _client.subscribe(topic, _getQos(qos));
     if (sub == null) {
       print(
-        '${Colorize('[MQTTGateway] MqttManager failed to subscribe to topic $topic').yellow()}',
+        '${Colorize('[MQTTGateway] MqttManager failed to subscribe to topic [$topic]').yellow()}',
       );
       return false;
     }
     print(
-      '${Colorize('[MQTTGateway] MqttManager subscribed to topic $topic').blue()}',
+      '${Colorize('[MQTTGateway] MqttManager subscribed to topic [$topic]').blue()}',
     );
     return true;
   }
 
   /// Unsubscribe from a topic
   bool unsubscribe(String topic) {
-    if (!_connected) {
+    if (!_connected || topic.isEmpty) {
       print(
-        '${Colorize('[MQTTGateway] MqttManager disconnected, cannot unsubscribe from topic $topic').yellow()}',
+        '${Colorize('[MQTTGateway] MqttManager disconnected, cannot unsubscribe from topic [$topic]').yellow()}',
       );
       return false;
     }
     _client.unsubscribe(topic);
     print(
-      '${Colorize('[MQTTGateway] MqttManager unsubscribed from topic $topic').blue()}',
+      '${Colorize('[MQTTGateway] MqttManager unsubscribed from topic [$topic]').blue()}',
     );
     return true;
   }

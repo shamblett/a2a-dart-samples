@@ -44,4 +44,25 @@ void main() {
     res = mm.disconnect();
     expect(res, isTrue);
   });
+  test('Subscribe/Unsubscribe', () async {
+    final ms = MessageStore();
+    final mm = MqttManager(ms);
+    bool res = mm.subscribe(topic1);
+    expect(res, isFalse);
+    res = mm.unsubscribe(topic1);
+    res = await mm.connect(broker, 1883, clientId);
+    expect(res, isTrue);
+    expect(mm.isConnected, isTrue);
+    res = mm.subscribe('');
+    expect(res, isFalse);
+    res = mm.subscribe(topic1);
+    expect(res, isTrue);
+    res = mm.unsubscribe('');
+    expect(res,isFalse);
+    res = mm.unsubscribe(topic1);
+    expect(res,isTrue);
+    res = mm.disconnect();
+    expect(res, isTrue);
+  });
+
 }
