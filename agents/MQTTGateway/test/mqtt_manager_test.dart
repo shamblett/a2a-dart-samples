@@ -16,8 +16,8 @@ import '../message_store.dart';
 void main() {
   const broker = 'localhost'; // Start a local MQTT broker
   const clientId = 'SJH-A2AClientId';
-  const topic1 = 'AJH-A2ATopic1';
-  const topic2 = 'AJH-A2ATopic2';
+  const topic1 = 'SJH-A2ATopic1';
+  const topic2 = 'SJH-A2ATopic2';
 
   test('Construction', () {
     final ms = MessageStore();
