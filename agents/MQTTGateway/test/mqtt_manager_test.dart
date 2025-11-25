@@ -18,6 +18,8 @@ void main() {
   const clientId = 'SJH-A2AClientId';
   const topic1 = 'SJH-A2ATopic1';
   const topic2 = 'SJH-A2ATopic2';
+  const t1Payload = 't1Payload';
+  const t2Payload = 't2Payload';
 
   test('Construction', () {
     final ms = MessageStore();
@@ -50,6 +52,7 @@ void main() {
     bool res = mm.subscribe(topic1);
     expect(res, isFalse);
     res = mm.unsubscribe(topic1);
+    expect(res, isFalse);
     res = await mm.connect(broker, 1883, clientId);
     expect(res, isTrue);
     expect(mm.isConnected, isTrue);
@@ -58,11 +61,38 @@ void main() {
     res = mm.subscribe(topic1);
     expect(res, isTrue);
     res = mm.unsubscribe('');
-    expect(res,isFalse);
+    expect(res, isFalse);
     res = mm.unsubscribe(topic1);
-    expect(res,isTrue);
+    expect(res, isTrue);
     res = mm.disconnect();
     expect(res, isTrue);
   });
 
+  test('Publish/Receive', () async {
+    final ms = MessageStore();
+    final mm = MqttManager(ms);
+    bool res = mm.publish(topic1, t1Payload);
+    expect(res, isFalse);
+    res = await mm.connect(broker, 1883, clientId);
+    expect(res, isTrue);
+    expect(mm.isConnected, isTrue);
+    res = mm.subscribe(topic1);
+    expect(res, isTrue);
+    res = mm.subscribe(topic2);
+    expect(res, isTrue);
+    res = mm.publish(topic1, t1Payload);
+    expect(res, isTrue);
+    res = mm.publish(topic2, t2Payload);
+    expect(res, isTrue);
+    expect(ms.hasMessages(topic1), isTrue);
+    expect(ms.hasMessages(topic2), isTrue);
+    final mess1 = ms.getMessages(topic1);
+    final mess2 = ms.getMessages(topic2);
+    expect(mess1.first.payload, t1Payload);
+    expect(mess2.first.payload, t2Payload);
+    res = mm.unsubscribe(topic1);
+    expect(res, isTrue);
+    res = mm.disconnect();
+    expect(res, isTrue);
+  });
 }
