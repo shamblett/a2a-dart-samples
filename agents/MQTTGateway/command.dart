@@ -19,6 +19,8 @@ sealed class Command {
   static const getMessages = 'get_messages';
   static const status = 'status';
 
+  String command = '';
+
   bool isValid = false;
 
   Command();
@@ -39,8 +41,6 @@ sealed class Command {
 }
 
 class Connect extends Command {
-  String command = Command.connect;
-
   /// Mandatory
   String brokerUrl = '';
 
@@ -76,5 +76,6 @@ class Connect extends Command {
     if (jsonMap.contains('password')) {
       password = jsonMap['password'];
     }
+    command = Command.connect;
   }
 }
