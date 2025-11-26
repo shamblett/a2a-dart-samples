@@ -10,8 +10,8 @@ library;
 
 import 'package:test/test.dart';
 
-import '../mqtt_manager.dart';
-import '../message_store.dart';
+import '../src/mqtt_manager.dart';
+import '../src/message_store.dart';
 
 void main() {
   const broker = 'localhost'; // Start a local MQTT broker

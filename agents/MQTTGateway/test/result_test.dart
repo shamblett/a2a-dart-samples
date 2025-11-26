@@ -14,9 +14,9 @@ import 'package:a2a/a2a.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:test/test.dart';
 
-import '../command.dart';
-import '../message.dart';
-import '../result.dart';
+import '../src/command.dart';
+import '../src/message.dart';
+import '../src/result.dart';
 
 void main() {
   test('toJson', () {

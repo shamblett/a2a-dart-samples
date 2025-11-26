@@ -11,8 +11,8 @@ library;
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:test/test.dart';
 
-import '../message.dart';
-import '../message_store.dart';
+import '../src/message.dart';
+import '../src/message_store.dart';
 
 void main() {
   group('Message', () {
