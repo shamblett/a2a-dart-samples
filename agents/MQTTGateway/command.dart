@@ -7,6 +7,8 @@
 
 import 'dart:convert';
 
+import 'mqtt_manager.dart';
+
 ///
 /// Gateway commands.
 ///
@@ -48,13 +50,13 @@ class Connect extends Command {
   int port = 1883;
 
   /// Optional
-  String clientId = '';
+  String clientId = MqttManager.defaultClientId;
 
   /// Optional
-  String username = '';
+  String? username;
 
   /// Optional
-  String password = '';
+  String? password;
 
   Connect();
 

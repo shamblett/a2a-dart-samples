@@ -22,7 +22,7 @@ class CommandProcessor {
 
   /// Execute a command and return the JSON string result.
   /// Returns a fail result if a command is found to be invalid.
-  String executeCommand(String input) {
+  Future<String> executeCommand(String input) async {
     final command = Command.fromJson(input);
     if (command == null) {
       return Result().toJson();
@@ -36,7 +36,7 @@ class CommandProcessor {
     switch (command.command) {
       case Command.connect:
         {
-          result = _doConnect(command);
+          result = await _doConnect(command as Connect);
         }
       default:
         result = Result();
@@ -46,7 +46,18 @@ class CommandProcessor {
   }
 
   // Connect
-  Result _doConnect(Command command) {
+  Future<Result> _doConnect(Connect command) async {
+    final res = await _mqttManager.connect(
+      command.brokerUrl,
+      command.port,
+      command.clientId,
+      command.username,
+      command.password,
+    );
+    if (res) {
+      return Result()..result = Result.success;
+    }
+
     return Result();
   }
 }
