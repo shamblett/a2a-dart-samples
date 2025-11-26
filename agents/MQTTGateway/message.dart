@@ -26,6 +26,6 @@ class Message {
       MqttPublishPayload.bytesToStringAsString(_publishMessage.payload.message);
 
   Message(this._publishMessage) {
-    _timestamp = A2AUtilities.getCurrentTimestamp();
+    _timestamp = A2AUtilities.getCurrentTimestamp().split('.').first;
   }
 }
