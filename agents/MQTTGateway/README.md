@@ -7,7 +7,7 @@ status reporting.
 
 Specifically the agent supports :-
 
-- Connection/Disconnection to/from an MQTT broker.
+- Connection/Disconnection to/from an MQTT broker(standard port 1883 only).
 - Subscription/Unsubscription to/from topics.
 - Publishing and reception of MQTT messages
 - Reporting of the status of the MQTT client.
