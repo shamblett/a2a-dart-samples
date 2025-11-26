@@ -29,10 +29,17 @@ class Result {
     sb.write('{ "result" : "$result"');
     if (command == Command.getMessages && messages.isNotEmpty) {
       sb.write(', "messages" : [ ');
+      int messCount = 0;
       for (final message in messages) {
+        messCount++;
         sb.write(
-          '{ "payload" : "${message.payload}", "timestamp" : "${message.timestamp}" }, ',
-        );
+          '{ "payload" : "${message.payload}", "timestamp" : "${message.timestamp}"');
+          if ( messCount == messages.length ) {
+            // Last message
+            sb.write(' } ');
+          } else {
+            sb.write(' }, ');
+        }
       }
       sb.write(']');
     }

@@ -38,10 +38,15 @@ void main() {
     final tn = A2AUtilities.getCurrentTimestamp().split('.').first;
     expect(
       r2.toJson(),
-      '{ "result" : "success", "messages" : [ { "payload" : "payload1", "timestamp" : "$tn" }, { "payload" : "payload2", "timestamp" : "$tn" }, ] }',
+      '{ "result" : "success", "messages" : [ { "payload" : "payload1", "timestamp" : "$tn" }, { "payload" : "payload2", "timestamp" : "$tn" } ] }',
     );
     final r2Map = json.decode(r2.toJson());
-    expect(r1Map.length, 2);
+    expect(r2Map.length, 2);
     expect(r2Map['result'], Result.success);
+    expect(r2Map['messages'].length, 2);
+    expect(r2Map['messages'].first['payload'], 'payload1');
+    expect(r2Map['messages'][1]['payload'], 'payload2');
+    expect(r2Map['messages'].first['timestamp'], tn);
+    expect(r2Map['messages'][1]['timestamp'], tn);
   });
 }
