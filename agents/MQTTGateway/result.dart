@@ -33,12 +33,13 @@ class Result {
       for (final message in messages) {
         messCount++;
         sb.write(
-          '{ "payload" : "${message.payload}", "timestamp" : "${message.timestamp}"');
-          if ( messCount == messages.length ) {
-            // Last message
-            sb.write(' } ');
-          } else {
-            sb.write(' }, ');
+          '{ "payload" : "${message.payload}", "timestamp" : "${message.timestamp}"',
+        );
+        if (messCount == messages.length) {
+          // Last message
+          sb.write(' } ');
+        } else {
+          sb.write(' }, ');
         }
       }
       sb.write(']');
