@@ -28,9 +28,12 @@ void main() {
     final m2 = Message(pm2);
     final r1 = Result();
     expect(r1.toJson(), '{ "result" : "fail" }');
+    r1.command = Command.getMessages;
+    r1.result = Result.success;
+    expect(r1.toJson(), '{ "result" : "success" }');
     final r1Map = json.decode(r1.toJson());
     expect(r1Map.length, 1);
-    expect(r1Map['result'], Result.fail);
+    expect(r1Map['result'], Result.success);
     final r2 = Result();
     r2.command = Command.getMessages;
     r2.result = Result.success;

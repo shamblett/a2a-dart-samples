@@ -5,6 +5,8 @@
 * Copyright :  S.Hamblett
 */
 
+import 'dart:convert';
+
 ///
 /// Gateway commands.
 ///
@@ -17,7 +19,23 @@ sealed class Command {
   static const getMessages = 'get_messages';
   static const status = 'status';
 
+  bool isValid = false;
+
   Command();
+
+  static Command? fromJson(String jsonString) {
+    final jsonMap = json.decode(jsonString);
+    if (!jsonMap.contains('command')) {
+      return null;
+    }
+    switch (jsonMap['command']) {
+      case Command.connect:
+        {
+          return Connect.fromJson(jsonString);
+        }
+    }
+    return null;
+  }
 }
 
 class Connect extends Command {
@@ -39,4 +57,24 @@ class Connect extends Command {
   String password = '';
 
   Connect();
+
+  Connect.fromJson(String jsonString) {
+    final jsonMap = json.decode(jsonString);
+    if (jsonMap.contains('broker_url')) {
+      brokerUrl = jsonMap['broker_url'];
+      isValid = true;
+    }
+    if (jsonMap.contains('port')) {
+      port = jsonMap['port'];
+    }
+    if (jsonMap.contains('client_id')) {
+      clientId = jsonMap['client_id'];
+    }
+    if (jsonMap.contains('user_name')) {
+      username = jsonMap['user_name'];
+    }
+    if (jsonMap.contains('password')) {
+      password = jsonMap['password'];
+    }
+  }
 }

@@ -25,7 +25,7 @@ port       : "Port string"         - Optional
 
 client_id  : "Client Id string"    - Optional
 
-user_id    : "User Id string"      - Optional
+user_name   : "User name string"    - Optional
 
 password   : "User password string - Optional
 
