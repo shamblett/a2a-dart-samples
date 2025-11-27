@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-passing-self-as-argument
+
 /*
 * Package : a2a
 * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -6,8 +8,9 @@
 */
 
 import 'package:a2a/a2a.dart';
-import 'log.dart';
 
+import 'command_processor.dart';
+import 'log.dart';
 import 'message_store.dart';
 import 'middleware_logging.dart';
 import 'mqtt_gateway_agent_card.dart';
@@ -32,8 +35,11 @@ class MqttGateway implements A2AAgentExecutor {
   // Message store
   final MessageStore _messageStore = MessageStore();
 
+  late final CommandProcessor _commandProcessor;
+
   MqttGateway() {
     _mqttManager = MqttManager(_messageStore);
+    _commandProcessor = CommandProcessor(_messageStore, _mqttManager);
   }
 
   @override
@@ -62,13 +68,33 @@ class MqttGateway implements A2AAgentExecutor {
     ec.publishWorkingTaskUpdate(part: [textPart]);
 
     // 3. Process the command
-    try {} catch (e) {
+    String result = '';
+    try {
+      result = await _commandProcessor.executeCommand(
+        (ec.userMessage.parts?.first as A2ATextPart).text,
+      );
+    } catch (e) {
       Log.warn('Error processing task: ${ec.taskId}, $e');
       final errorResponse = ec.createTextPart('Agent error: $e');
       final messageId = ec.v4Uuid;
       final message = ec.createMessage(messageId, parts: [errorResponse]);
       ec.publishFailedTaskUpdate(message: message);
     }
+
+    // 4. Check for request cancellation
+    if (ec.isTaskCancelled) {
+      Log.warn('Request cancelled for task: ${ec.taskId}');
+      ec.publishCancelTaskUpdate();
+      return;
+    }
+
+    // 5. Complete the task
+    final message = ec.createMessage(
+      ec.v4Uuid,
+      parts: [A2ATextPart()..text = result],
+    );
+    ec.publishFinalTaskUpdate(message: message);
+    Log.info('Task ${ec.taskId} finished with state: completed');
   }
 }
 
