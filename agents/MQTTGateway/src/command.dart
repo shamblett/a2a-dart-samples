@@ -29,7 +29,7 @@ sealed class Command {
 
   static Command? fromJson(String jsonString) {
     final jsonMap = json.decode(jsonString);
-    if (!jsonMap.contains('command')) {
+    if (!jsonMap.containsKey('command')) {
       return null;
     }
     switch (jsonMap['command']) {
@@ -62,20 +62,20 @@ class Connect extends Command {
 
   Connect.fromJson(String jsonString) {
     final jsonMap = json.decode(jsonString);
-    if (jsonMap.contains('broker_url')) {
+    if (jsonMap.containsKey('broker_url')) {
       brokerUrl = jsonMap['broker_url'];
       isValid = true;
     }
-    if (jsonMap.contains('port')) {
+    if (jsonMap.containsKey('port')) {
       port = jsonMap['port'];
     }
-    if (jsonMap.contains('client_id')) {
+    if (jsonMap.containsKey('client_id')) {
       clientId = jsonMap['client_id'];
     }
-    if (jsonMap.contains('user_name')) {
+    if (jsonMap.containsKey('user_name')) {
       username = jsonMap['user_name'];
     }
-    if (jsonMap.contains('password')) {
+    if (jsonMap.containsKey('password')) {
       password = jsonMap['password'];
     }
     command = Command.connect;
@@ -97,11 +97,11 @@ class Subscribe extends Command {
 
   Subscribe.fromJson(String jsonString) {
     final jsonMap = json.decode(jsonString);
-    if (jsonMap.contains('topic')) {
+    if (jsonMap.containsKey('topic')) {
       topic = jsonMap['topic'];
       isValid = true;
     }
-    if (jsonMap.contains('qos')) {
+    if (jsonMap.containsKey('qos')) {
       qos = jsonMap['qos'];
     }
   }
@@ -115,7 +115,7 @@ class Unsubscribe extends Command {
 
   Unsubscribe.fromJson(String jsonString) {
     final jsonMap = json.decode(jsonString);
-    if (jsonMap.contains('topic')) {
+    if (jsonMap.containsKey('topic')) {
       topic = jsonMap['topic'];
       isValid = true;
     }
@@ -136,12 +136,12 @@ class Publish extends Command {
 
   Publish.fromJson(String jsonString) {
     final jsonMap = json.decode(jsonString);
-    if (jsonMap.contains('topic') && jsonMap.contains('payload')) {
+    if (jsonMap.containsKey('topic') && jsonMap.containsKey('payload')) {
       topic = jsonMap['topic'];
       payload = jsonMap['payload'];
       isValid = true;
     }
-    if (jsonMap.contains('qos')) {
+    if (jsonMap.containsKey('qos')) {
       qos = jsonMap['qos'];
     }
   }
@@ -155,7 +155,7 @@ class GetMessages extends Command {
 
   GetMessages.fromJson(String jsonString) {
     final jsonMap = json.decode(jsonString);
-    if (jsonMap.contains('topic')) {
+    if (jsonMap.containsKey('topic')) {
       topic = jsonMap['topic'];
       isValid = true;
     }

@@ -24,13 +24,23 @@ class CommandProcessor {
   /// Execute a command and return the JSON string result.
   /// Returns a fail result if a command is found to be invalid.
   Future<String> executeCommand(String input) async {
-    final command = Command.fromJson(input);
-    if (command == null) {
-      Log.warn('Command Processor input is invalid JSON');
+    if (input.isEmpty) {
+      Log.warn('Command Processor input is empty');
       return Result().toJson();
     }
-    if (!command.isValid) {
-      Log.warn('Command Processor input is not a valid command');
+    Command? command;
+    try {
+      command = Command.fromJson(input);
+      if (command == null) {
+        Log.warn('Command Processor input is invalid JSON');
+        return Result().toJson();
+      }
+      if (!command.isValid) {
+        Log.warn('Command Processor input is not a valid command');
+        return Result().toJson();
+      }
+    } catch (e) {
+      Log.warn('Command Processor exception raised in fromJson');
       return Result().toJson();
     }
 
