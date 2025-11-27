@@ -19,7 +19,7 @@ import '../src/message.dart';
 import '../src/result.dart';
 
 void main() {
-  test('toJson', () {
+  test('toJson - commands', () {
     final pl1 = MqttClientPayloadBuilder()..addString('payload1');
     final pl2 = MqttClientPayloadBuilder()..addString('payload2');
     final pm1 = MqttPublishMessage().toTopic('t1').publishData(pl1.payload!);
@@ -51,5 +51,12 @@ void main() {
     expect(r2Map['messages'][1]['payload'], 'payload2');
     expect(r2Map['messages'].first['timestamp'], tn);
     expect(r2Map['messages'][1]['timestamp'], tn);
+  });
+  test('toJson - status', () {
+    final r1 = Result();
+    r1.command = Command.status;
+    expect(r1.toJson(), '{ "result" : "not_connected" }');
+    r1.connected = true;
+    expect(r1.toJson(), '{ "result" : "connected" }');
   });
 }
