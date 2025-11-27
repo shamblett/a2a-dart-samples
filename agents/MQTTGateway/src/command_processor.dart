@@ -14,9 +14,9 @@ import 'result.dart';
 /// Gateway command processor.
 ///
 class CommandProcessor {
-  final _mqttManager;
+  final MqttManager _mqttManager;
 
-  final _messageStore;
+  final MessageStore _messageStore;
 
   CommandProcessor(this._messageStore, this._mqttManager);
 
@@ -32,15 +32,9 @@ class CommandProcessor {
     }
 
     // Valid command
-    Result result;
-    switch (command.command) {
-      case Command.connect:
-        {
-          result = await _doConnect(command as Connect);
-        }
-      default:
-        result = Result();
-    }
+    final result = switch (command) {
+      Connect() => await _doConnect(command),
+    };
 
     return result.toJson();
   }
