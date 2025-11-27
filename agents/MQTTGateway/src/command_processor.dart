@@ -6,6 +6,7 @@
 */
 
 import 'command.dart';
+import 'log.dart';
 import 'message_store.dart';
 import 'mqtt_manager.dart';
 import 'result.dart';
@@ -25,9 +26,11 @@ class CommandProcessor {
   Future<String> executeCommand(String input) async {
     final command = Command.fromJson(input);
     if (command == null) {
+      Log.warn('Command Processor input is invalid JSON');
       return Result().toJson();
     }
     if (!command.isValid) {
+      Log.warn('Command Processor input is not a valid command');
       return Result().toJson();
     }
 
