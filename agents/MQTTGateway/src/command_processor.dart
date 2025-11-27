@@ -34,9 +34,13 @@ class CommandProcessor {
       return Result().toJson();
     }
 
-    // Valid command
+    // Valid command, execute it
     final result = switch (command) {
       Connect() => await _doConnect(command),
+      Disconnect() => _doDisconnect(),
+      Subscribe() => _doSubscribe(command),
+      Unsubscribe() => _doUnsubscribe(command),
+      Publish() => _doPublish(command),
     };
 
     return result.toJson();
@@ -51,6 +55,49 @@ class CommandProcessor {
       command.username,
       command.password,
     );
+    if (res) {
+      return Result()..result = Result.success;
+    }
+
+    return Result();
+  }
+
+  // Disconnect
+  Result _doDisconnect() {
+    _mqttManager.disconnect();
+    return Result()..result = Result.success;
+  }
+
+  // Subscribe
+  Result _doSubscribe(Subscribe command) {
+    final res = _mqttManager.subscribe(command.topic, command.qos);
+
+    if (res) {
+      return Result()..result = Result.success;
+    }
+
+    return Result();
+  }
+
+  // Unsubscribe
+  Result _doUnsubscribe(Unsubscribe command) {
+    final res = _mqttManager.unsubscribe(command.topic);
+
+    if (res) {
+      return Result()..result = Result.success;
+    }
+
+    return Result();
+  }
+
+  // Publish
+  Result _doPublish(Publish command) {
+    final res = _mqttManager.publish(
+      command.topic,
+      command.payload,
+      command.qos,
+    );
+
     if (res) {
       return Result()..result = Result.success;
     }

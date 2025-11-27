@@ -103,7 +103,7 @@ class MqttManager {
       Log.warn('MqttManager disconnected, cannot subscribe to topic [$topic]');
       return false;
     }
-    final sub = _client.subscribe(topic, _getQos(qos));
+    final sub = _client.subscribe(topic, getQos(qos));
     if (sub == null) {
       Log.warn('MqttManager failed to subscribe to topic [$topic]');
       return false;
@@ -134,7 +134,7 @@ class MqttManager {
     final builder = MqttClientPayloadBuilder();
     builder.addString(payload);
     try {
-      _client.publishMessage(topic, _getQos(qos), builder.payload!);
+      _client.publishMessage(topic, getQos(qos), builder.payload!);
     } catch (e) {
       Log.warn('MqttManager failed to publish message to topic $topic');
       return false;
@@ -144,7 +144,7 @@ class MqttManager {
   }
 
   // Get the MQTT QoS value
-  MqttQos _getQos(int qos) {
+  static MqttQos getQos(int qos) {
     switch (qos) {
       case 0:
         return MqttQos.atLeastOnce;

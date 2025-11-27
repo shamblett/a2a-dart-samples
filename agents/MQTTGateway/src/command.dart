@@ -81,3 +81,68 @@ class Connect extends Command {
     command = Command.connect;
   }
 }
+
+class Disconnect extends Command {
+  Disconnect();
+}
+
+class Subscribe extends Command {
+  /// Mandatory
+  String topic = '';
+
+  /// Optional
+  int qos = 0; // Lowest QoS
+
+  Subscribe();
+
+  Subscribe.fromJson(String jsonString) {
+    final jsonMap = json.decode(jsonString);
+    if (jsonMap.contains('topic')) {
+      topic = jsonMap['topic'];
+      isValid = true;
+    }
+    if (jsonMap.contains('qos')) {
+      qos = jsonMap['qos'];
+    }
+  }
+}
+
+class Unsubscribe extends Command {
+  /// Mandatory
+  String topic = '';
+
+  Unsubscribe();
+
+  Unsubscribe.fromJson(String jsonString) {
+    final jsonMap = json.decode(jsonString);
+    if (jsonMap.contains('topic')) {
+      topic = jsonMap['topic'];
+      isValid = true;
+    }
+  }
+}
+
+class Publish extends Command {
+  /// Mandatory
+  String topic = '';
+
+  /// Mandatory
+  String payload = '';
+
+  /// Optional
+  int qos = 0; // Lowest QoS
+
+  Publish();
+
+  Publish.fromJson(String jsonString) {
+    final jsonMap = json.decode(jsonString);
+    if (jsonMap.contains('topic') && jsonMap.contains('payload')) {
+      topic = jsonMap['topic'];
+      payload = jsonMap['payload'];
+      isValid = true;
+    }
+    if (jsonMap.contains('qos')) {
+      qos = jsonMap['qos'];
+    }
+  }
+}
