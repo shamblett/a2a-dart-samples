@@ -146,3 +146,20 @@ class Publish extends Command {
     }
   }
 }
+
+class GetMessages extends Command {
+  /// Mandatory
+  String topic = '';
+
+  GetMessages();
+
+  GetMessages.fromJson(String jsonString) {
+    final jsonMap = json.decode(jsonString);
+    if (jsonMap.contains('topic')) {
+      topic = jsonMap['topic'];
+      isValid = true;
+    }
+  }
+}
+
+class Status extends Command {}

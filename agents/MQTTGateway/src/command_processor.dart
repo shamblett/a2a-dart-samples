@@ -41,6 +41,8 @@ class CommandProcessor {
       Subscribe() => _doSubscribe(command),
       Unsubscribe() => _doUnsubscribe(command),
       Publish() => _doPublish(command),
+      GetMessages() => _doGetMessages(command),
+      Status() => _doStatus(),
     };
 
     return result.toJson();
@@ -56,16 +58,20 @@ class CommandProcessor {
       command.password,
     );
     if (res) {
-      return Result()..result = Result.success;
+      return Result()
+        ..result = Result.success
+        ..command = Command.connect;
     }
 
-    return Result();
+    return Result()..command = Command.connect;
   }
 
   // Disconnect
   Result _doDisconnect() {
     _mqttManager.disconnect();
-    return Result()..result = Result.success;
+    return Result()
+      ..result = Result.success
+      ..command = Command.disconnect;
   }
 
   // Subscribe
@@ -73,10 +79,12 @@ class CommandProcessor {
     final res = _mqttManager.subscribe(command.topic, command.qos);
 
     if (res) {
-      return Result()..result = Result.success;
+      return Result()
+        ..result = Result.success
+        ..command = Command.subscribe;
     }
 
-    return Result();
+    return Result()..command = Command.subscribe;
   }
 
   // Unsubscribe
@@ -84,10 +92,12 @@ class CommandProcessor {
     final res = _mqttManager.unsubscribe(command.topic);
 
     if (res) {
-      return Result()..result = Result.success;
+      return Result()
+        ..result = Result.success
+        ..command = Command.unsubscribe;
     }
 
-    return Result();
+    return Result()..command = Command.unsubscribe;
   }
 
   // Publish
@@ -99,9 +109,22 @@ class CommandProcessor {
     );
 
     if (res) {
-      return Result()..result = Result.success;
+      return Result()
+        ..result = Result.success
+        ..command = Command.publish;
     }
 
-    return Result();
+    return Result()..command = Command.publish;
   }
+
+  // Get Messages
+  Result _doGetMessages(GetMessages command) => Result()
+    ..result = Result.success
+    ..command = Command.getMessages
+    ..messages = _messageStore.getMessages(command.topic);
+
+  // Status
+  Result _doStatus() => Result()
+    ..command = Command.status
+    ..connected = _mqttManager.isConnected;
 }
