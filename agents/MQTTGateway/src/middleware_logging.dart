@@ -6,14 +6,13 @@
 */
 
 import 'package:a2a/a2a.dart';
-import 'package:colorize/colorize.dart';
+
+import 'log.dart';
 
 /// Middleware logging class
 class MiddlewareLogging {
   static final mwLogging = ((Request req, Response res, NextFunction next) {
-    print(
-      '${Colorize('📝 Request: ${req.method} ${req.uri} from ${req.hostname}').blue()}',
-    );
+    Log.info(' Request: ${req.method} ${req.uri} from ${req.hostname}');
     next();
   });
 }

@@ -5,10 +5,10 @@
 * Copyright :  S.Hamblett
 */
 
-import 'package:colorize/colorize.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
+import 'log.dart';
 import 'message.dart';
 import 'message_store.dart';
 
@@ -46,9 +46,7 @@ class MqttManager {
   ]) async {
     // Check if already connected
     if (_connected) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager already connected, disconnect the client first').yellow()}',
-      );
+      Log.warn(' MqttManager already connected, disconnect the client first');
       return false;
     }
     _brokerUrl = brokerUrl;
@@ -57,31 +55,27 @@ class MqttManager {
     _client = MqttServerClient.withPort(_brokerUrl, _clientId, _port);
 
     // Connect the client
-    print(
-      '${Colorize('[MQTTGateway] MqttManager connecting to broker at [$_brokerUrl] on port $_port').blue()}',
+    Log.info(
+      'MqttManager connecting to broker at [$_brokerUrl] on port $_port',
     );
     try {
       await _client.connect(userName, password);
     } catch (e) {
       // Any exception denotes failure
-      print(
-        '${Colorize('[MQTTGateway] MqttManager failed to connect, exception is $e').yellow()}',
-      );
+      Log.warn('MqttManager failed to connect, exception is $e');
       return false;
     }
 
     // Check connection status
     if (_client.connectionStatus!.state != MqttConnectionState.connected) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager failed to connect, connection state is ${_client.connectionStatus!.state}').yellow()}',
+      Log.warn(
+        'MqttManager failed to connect, connection state is ${_client.connectionStatus!.state}',
       );
       return false;
     }
 
     // Connected
-    print(
-      '${Colorize('[MQTTGateway] MqttManager connected to broker at [$_brokerUrl] on port $_port').blue()}',
-    );
+    Log.info('MqttManager connected to broker at [$_brokerUrl] on port $_port');
     _connected = true;
     _listenForMessages();
     return true;
@@ -90,14 +84,14 @@ class MqttManager {
   /// Disconnect, can't fail, always returns true.
   bool disconnect() {
     if (!_connected) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager already disconnected from broker at [$_brokerUrl] on port $_port').yellow()}',
+      Log.warn(
+        'MqttManager already disconnected from broker at [$_brokerUrl] on port $_port',
       );
       return true;
     }
     _client.disconnect();
-    print(
-      '${Colorize('[MQTTGateway] MqttManager disconnected from broker at [$_brokerUrl] on port $_port').blue()}',
+    Log.info(
+      'MqttManager disconnected from broker at [$_brokerUrl] on port $_port',
     );
     _connected = false;
     return true;
@@ -106,45 +100,35 @@ class MqttManager {
   /// Subscribe to a topic
   bool subscribe(String topic, [int qos = 0]) {
     if (!_connected) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager disconnected, cannot subscribe to topic [$topic]').yellow()}',
-      );
+      Log.warn('MqttManager disconnected, cannot subscribe to topic [$topic]');
       return false;
     }
     final sub = _client.subscribe(topic, _getQos(qos));
     if (sub == null) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager failed to subscribe to topic [$topic]').yellow()}',
-      );
+      Log.warn('MqttManager failed to subscribe to topic [$topic]');
       return false;
     }
-    print(
-      '${Colorize('[MQTTGateway] MqttManager subscribed to topic [$topic]').blue()}',
-    );
+    Log.info(' MqttManager subscribed to topic [$topic]');
     return true;
   }
 
   /// Unsubscribe from a topic
   bool unsubscribe(String topic) {
     if (!_connected || topic.isEmpty) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager disconnected, cannot unsubscribe from topic [$topic]').yellow()}',
+      Log.warn(
+        'MqttManager disconnected, cannot unsubscribe from topic [$topic]',
       );
       return false;
     }
     _client.unsubscribe(topic);
-    print(
-      '${Colorize('[MQTTGateway] MqttManager unsubscribed from topic [$topic]').blue()}',
-    );
+    Log.info('MqttManager unsubscribed from topic [$topic]');
     return true;
   }
 
   /// Publish a message to a topic
   bool publish(String topic, String payload, [int qos = 0]) {
     if (!_connected) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager disconnected, cannot publish to topic $topic').yellow()}',
-      );
+      Log.warn('MqttManager disconnected, cannot publish to topic $topic');
       return false;
     }
     final builder = MqttClientPayloadBuilder();
@@ -152,14 +136,10 @@ class MqttManager {
     try {
       _client.publishMessage(topic, _getQos(qos), builder.payload!);
     } catch (e) {
-      print(
-        '${Colorize('[MQTTGateway] MqttManager failed to publish message to topic $topic').yellow()}',
-      );
+      Log.warn('MqttManager failed to publish message to topic $topic');
       return false;
     }
-    print(
-      '${Colorize('[MQTTGateway] MqttManager published message to topic $topic').blue()}',
-    );
+    Log.info('MqttManager published message to topic $topic');
     return true;
   }
 

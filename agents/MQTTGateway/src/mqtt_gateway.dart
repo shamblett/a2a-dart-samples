@@ -6,7 +6,7 @@
 */
 
 import 'package:a2a/a2a.dart';
-import 'package:colorize/colorize.dart';
+import 'log.dart';
 
 import 'message_store.dart';
 import 'middleware_logging.dart';
@@ -47,10 +47,9 @@ class MqttGateway implements A2AAgentExecutor {
   ) async {
     /// Create the executor construction helper
     ec = A2AExecutorConstructor(requestContext, eventBus);
-
-    print(
-      '${Colorize('[MQTTGateway] Processing message ${ec.userMessage.messageId} '
-      'for task ${ec.taskId} (context: ${ec.contextId})').blue()}',
+    Log.info(
+      'Processing message ${ec.userMessage.messageId} '
+      'for task ${ec.taskId} (context: ${ec.contextId})',
     );
 
     // 1. Publish initial Task event if it's a new task
@@ -64,10 +63,7 @@ class MqttGateway implements A2AAgentExecutor {
 
     // 3. Process the command
     try {} catch (e) {
-      print(
-        '${Colorize('[MQTTGatewayExecutor] Error processing task: ${ec.taskId}, $e').yellow()}',
-      );
-
+      Log.warn('Error processing task: ${ec.taskId}, $e');
       final errorResponse = ec.createTextPart('Agent error: $e');
       final messageId = ec.v4Uuid;
       final message = ec.createMessage(messageId, parts: [errorResponse]);
@@ -104,15 +100,9 @@ void main() {
   // Start listening
   const port = 10004;
   expressApp.listen(port, () {
-    print(
-      '${Colorize('[MQTTGateway] Server using new framework started on http://localhost:$port').blue()}',
-    );
-    print(
-      '${Colorize('[MQTTGateway] Agent Card: http://localhost:$port}/.well-known/agent-card.json').blue()}',
-    );
-    print(
-      '${Colorize('[MQTTGateway] Press Ctrl+C to stop the server').blue()}',
-    );
+    Log.info(' Server using new framework started on http://localhost:$port');
+    Log.info('Agent Card: http://localhost:$port}/.well-known/agent-card.json');
+    Log.info('Press Ctrl+C to stop the server');
     print('');
   });
 }
