@@ -47,7 +47,7 @@ void main() {
     expect(connect.username, isNull);
     expect(connect.password, isNull);
   });
-  test('Connect - All parameters', () async {
+  test('Connect - All Parameters', () async {
     final cmd = Command.fromJson(
       '{ "command" : "connect", "broker_url" : "localhost", "port" : 2000, "client_id" : "www", "user_name" : "billy", "password" : "dd"}',
     );
@@ -60,5 +60,107 @@ void main() {
     expect(connect.clientId, 'www');
     expect(connect.username, 'billy');
     expect(connect.password, 'dd');
+  });
+  test('Disconnect', () async {
+    final cmd = Command.fromJson('{ "command" : "disconnect" }');
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isTrue);
+    expect(cmd is Disconnect, isTrue);
+  });
+  test('Subscribe - No topic', () async {
+    final cmd = Command.fromJson('{ "command" : "subscribe" }');
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isFalse);
+    expect(cmd is Subscribe, isTrue);
+  });
+  test('Subscribe - Default QoS', () async {
+    final cmd = Command.fromJson(
+      '{ "command" : "subscribe", "topic" : "theTopic" }',
+    );
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isTrue);
+    expect(cmd is Subscribe, isTrue);
+    final subscribe = cmd as Subscribe;
+    expect(subscribe.topic, 'theTopic');
+    expect(subscribe.qos, 0);
+  });
+  test('Subscribe - All Parameters', () async {
+    final cmd = Command.fromJson(
+      '{ "command" : "subscribe", "topic" : "theTopic", "qos" : 2 }',
+    );
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isTrue);
+    expect(cmd is Subscribe, isTrue);
+    final subscribe = cmd as Subscribe;
+    expect(subscribe.topic, 'theTopic');
+    expect(subscribe.qos, 2);
+  });
+
+  test('Unsubscribe - No topic', () async {
+    final cmd = Command.fromJson('{ "command" : "unsubscribe" }');
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isFalse);
+    expect(cmd is Unsubscribe, isTrue);
+  });
+  test('Publish - No topic', () async {
+    final cmd = Command.fromJson('{ "command" : "publish" }');
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isFalse);
+    expect(cmd is Publish, isTrue);
+  });
+  test('Publish - No payload', () async {
+    final cmd = Command.fromJson(
+      '{ "command" : "publish", "topic" : "theTopic" }',
+    );
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isFalse);
+    expect(cmd is Publish, isTrue);
+  });
+
+  test('Publish - Defaults', () async {
+    final cmd = Command.fromJson(
+      '{ "command" : "publish", "topic" : "theTopic", "payload" : "thePayload" }',
+    );
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isTrue);
+    expect(cmd is Publish, isTrue);
+    final publish = cmd as Publish;
+    expect(publish.topic, 'theTopic');
+    expect(publish.payload, 'thePayload');
+    expect(publish.qos, 0);
+  });
+  test('Publish - All Parameters', () async {
+    final cmd = Command.fromJson(
+      '{ "command" : "publish", "topic" : "theTopic", "payload" : "thePayload", "qos" : 2 }',
+    );
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isTrue);
+    expect(cmd is Publish, isTrue);
+    final publish = cmd as Publish;
+    expect(publish.topic, 'theTopic');
+    expect(publish.payload, 'thePayload');
+    expect(publish.qos, 2);
+  });
+  test('Get Messages - No topic', () async {
+    final cmd = Command.fromJson('{ "command" : "get_messages" }');
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isFalse);
+    expect(cmd is GetMessages, isTrue);
+  });
+  test('Get Messages - All parameters', () async {
+    final cmd = Command.fromJson(
+      '{ "command" : "get_messages", "topic" : "theTopic" }',
+    );
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isTrue);
+    expect(cmd is GetMessages, isTrue);
+    final getMessages = cmd as GetMessages;
+    expect(getMessages.topic, 'theTopic');
+  });
+  test('Status', () async {
+    final cmd = Command.fromJson('{ "command" : "status" }');
+    expect(cmd, isNotNull);
+    expect(cmd!.isValid, isTrue);
+    expect(cmd is Status, isTrue);
   });
 }

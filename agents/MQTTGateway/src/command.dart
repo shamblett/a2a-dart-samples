@@ -42,6 +42,30 @@ sealed class Command {
         {
           return Connect.fromJson(jsonString);
         }
+      case Command.disconnect:
+        {
+          return Disconnect()..isValid = true;
+        }
+      case Command.subscribe:
+        {
+          return Subscribe.fromJson(jsonString);
+        }
+      case Command.unsubscribe:
+        {
+          return Unsubscribe.fromJson(jsonString);
+        }
+      case Command.publish:
+        {
+          return Publish.fromJson(jsonString);
+        }
+      case Command.getMessages:
+        {
+          return GetMessages.fromJson(jsonString);
+        }
+      case Command.status:
+        {
+          return Status()..isValid = true;
+        }
     }
     return null;
   }
