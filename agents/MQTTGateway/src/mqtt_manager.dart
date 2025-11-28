@@ -109,6 +109,7 @@ class MqttManager {
       return false;
     }
     Log.info(' MqttManager subscribed to topic [$topic]');
+    _checkConnectionStatus();
     return true;
   }
 
@@ -122,6 +123,7 @@ class MqttManager {
     }
     _client.unsubscribe(topic);
     Log.info('MqttManager unsubscribed from topic [$topic]');
+    _checkConnectionStatus();
     return true;
   }
 
@@ -140,6 +142,7 @@ class MqttManager {
       return false;
     }
     Log.info('MqttManager published message to topic $topic');
+    _checkConnectionStatus();
     return true;
   }
 
@@ -164,5 +167,13 @@ class MqttManager {
       final message = Message(recMess);
       _messageStore.addMessage(c.first.topic, message);
     });
+  }
+
+  // Check the connection status
+  void _checkConnectionStatus() {
+    if (_client.connectionStatus!.state != MqttConnectionState.connected) {
+      Log.warn('Client has become disconnected, please reconnect');
+      _connected = false;
+    }
   }
 }
