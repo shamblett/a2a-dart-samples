@@ -12,7 +12,7 @@ import 'log.dart';
 /// Middleware logging class
 class MiddlewareLogging {
   static final mwLogging = ((Request req, Response res, NextFunction next) {
-    Log.info(' Request: ${req.method} ${req.uri} from ${req.hostname}');
+    Log.info('Request: ${req.method} ${req.uri} from ${req.hostname}');
     next();
   });
 }

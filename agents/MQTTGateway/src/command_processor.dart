@@ -60,6 +60,7 @@ class CommandProcessor {
 
   // Connect
   Future<Result> _doConnect(Connect command) async {
+    Log.info('Processing CONNECT command');
     final res = await _mqttManager.connect(
       command.brokerUrl,
       command.port,
@@ -78,6 +79,7 @@ class CommandProcessor {
 
   // Disconnect
   Result _doDisconnect() {
+    Log.info('Processing DISCONNECT command');
     _mqttManager.disconnect();
     return Result()
       ..result = Result.success
@@ -86,6 +88,7 @@ class CommandProcessor {
 
   // Subscribe
   Result _doSubscribe(Subscribe command) {
+    Log.info('Processing SUBSCRIBE command');
     final res = _mqttManager.subscribe(command.topic, command.qos);
 
     if (res) {
@@ -99,6 +102,7 @@ class CommandProcessor {
 
   // Unsubscribe
   Result _doUnsubscribe(Unsubscribe command) {
+    Log.info('Processing UNSUBSCRIBE command');
     final res = _mqttManager.unsubscribe(command.topic);
 
     if (res) {
@@ -112,6 +116,7 @@ class CommandProcessor {
 
   // Publish
   Result _doPublish(Publish command) {
+    Log.info('Processing PUBLISH command');
     final res = _mqttManager.publish(
       command.topic,
       command.payload,
@@ -128,13 +133,19 @@ class CommandProcessor {
   }
 
   // Get Messages
-  Result _doGetMessages(GetMessages command) => Result()
-    ..result = Result.success
-    ..command = Command.getMessages
-    ..messages = _messageStore.getMessages(command.topic);
+  Result _doGetMessages(GetMessages command) {
+    Log.info('Processing GETMESSAGES command');
+    return Result()
+      ..result = Result.success
+      ..command = Command.getMessages
+      ..messages = _messageStore.getMessages(command.topic);
+  }
 
   // Status
-  Result _doStatus() => Result()
-    ..command = Command.status
-    ..connected = _mqttManager.isConnected;
+  Result _doStatus() {
+    Log.info('Processing STATUS command');
+    return Result()
+      ..command = Command.status
+      ..connected = _mqttManager.isConnected;
+  }
 }

@@ -126,7 +126,7 @@ void main() {
   // Start listening
   const port = 10004;
   expressApp.listen(port, () {
-    Log.info(' Server using new framework started on http://localhost:$port');
+    Log.info('Agent started on http://localhost:$port');
     Log.info('Agent Card: http://localhost:$port}/.well-known/agent-card.json');
     Log.info('Press Ctrl+C to stop the server');
     print('');
