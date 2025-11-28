@@ -28,8 +28,13 @@ sealed class Command {
   Command();
 
   static Command? fromJson(String jsonString) {
-    final jsonMap = json.decode(jsonString);
-    if (!jsonMap.containsKey('command')) {
+    Map? jsonMap;
+    try {
+      jsonMap = json.decode(jsonString);
+    } catch (e) {
+      return null;
+    }
+    if (!jsonMap!.containsKey('command')) {
       return null;
     }
     switch (jsonMap['command']) {
