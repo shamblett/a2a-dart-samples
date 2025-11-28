@@ -21,10 +21,6 @@ void main() {
     final cmd = Command.fromJson('jr///ooo');
     expect(cmd, isNull);
   });
-  test('Invalid JSON', () async {
-    final cmd = Command.fromJson('jr///ooo');
-    expect(cmd, isNull);
-  });
   test('No Command Key', () async {
     final cmd = Command.fromJson('{ "billy" : "fred" }');
     expect(cmd, isNull);
