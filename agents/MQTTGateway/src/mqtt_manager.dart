@@ -20,7 +20,7 @@ class MqttManager {
 
   final MessageStore _messageStore;
 
-  late MqttServerClient _client;
+  MqttServerClient _client = MqttServerClient('', '');
 
   String _brokerUrl = '';
 
@@ -28,9 +28,8 @@ class MqttManager {
 
   String _clientId = '';
 
-  bool _connected = false;
-
-  bool get isConnected => _connected;
+  bool get isConnected =>
+      _client.connectionStatus!.state == MqttConnectionState.connected;
 
   /// Construction
   MqttManager(this._messageStore);
@@ -45,7 +44,7 @@ class MqttManager {
     String? password,
   ]) async {
     // Check if already connected
-    if (_connected) {
+    if (isConnected) {
       Log.warn(' MqttManager already connected, disconnect the client first');
       return false;
     }
@@ -76,14 +75,13 @@ class MqttManager {
 
     // Connected
     Log.info('MqttManager connected to broker at [$_brokerUrl] on port $_port');
-    _connected = true;
     _listenForMessages();
     return true;
   }
 
   /// Disconnect, can't fail, always returns true.
   bool disconnect() {
-    if (!_connected) {
+    if (!isConnected) {
       Log.warn(
         'MqttManager already disconnected from broker at [$_brokerUrl] on port $_port',
       );
@@ -93,13 +91,12 @@ class MqttManager {
     Log.info(
       'MqttManager disconnected from broker at [$_brokerUrl] on port $_port',
     );
-    _connected = false;
     return true;
   }
 
   /// Subscribe to a topic
   bool subscribe(String topic, [int qos = 0]) {
-    if (!_connected) {
+    if (!isConnected) {
       Log.warn('MqttManager disconnected, cannot subscribe to topic [$topic]');
       return false;
     }
@@ -109,13 +106,12 @@ class MqttManager {
       return false;
     }
     Log.info(' MqttManager subscribed to topic [$topic]');
-    _checkConnectionStatus();
     return true;
   }
 
   /// Unsubscribe from a topic
   bool unsubscribe(String topic) {
-    if (!_connected || topic.isEmpty) {
+    if (!isConnected || topic.isEmpty) {
       Log.warn(
         'MqttManager disconnected, cannot unsubscribe from topic [$topic]',
       );
@@ -123,13 +119,12 @@ class MqttManager {
     }
     _client.unsubscribe(topic);
     Log.info('MqttManager unsubscribed from topic [$topic]');
-    _checkConnectionStatus();
     return true;
   }
 
   /// Publish a message to a topic
   bool publish(String topic, String payload, [int qos = 0]) {
-    if (!_connected) {
+    if (!isConnected) {
       Log.warn('MqttManager disconnected, cannot publish to topic $topic');
       return false;
     }
@@ -142,7 +137,6 @@ class MqttManager {
       return false;
     }
     Log.info('MqttManager published message to topic $topic');
-    _checkConnectionStatus();
     return true;
   }
 
@@ -167,13 +161,5 @@ class MqttManager {
       final message = Message(recMess);
       _messageStore.addMessage(c.first.topic, message);
     });
-  }
-
-  // Check the connection status
-  void _checkConnectionStatus() {
-    if (_client.connectionStatus!.state != MqttConnectionState.connected) {
-      Log.warn('Client has become disconnected, please reconnect');
-      _connected = false;
-    }
   }
 }
