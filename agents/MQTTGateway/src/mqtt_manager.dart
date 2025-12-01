@@ -52,6 +52,8 @@ class MqttManager {
     _port = port;
     _clientId = clientId;
     _client = MqttServerClient.withPort(_brokerUrl, _clientId, _port);
+    _client.onDisconnected = _onDisconnected;
+    _client.setProtocolV311();
 
     // Connect the client
     Log.info(
@@ -161,5 +163,15 @@ class MqttManager {
       final message = Message(recMess);
       _messageStore.addMessage(c.first.topic, message);
     });
+  }
+
+  // Disconnect callback
+  void _onDisconnected() {
+    if (_client.connectionStatus!.disconnectionOrigin ==
+        MqttDisconnectionOrigin.unsolicited) {
+      Log.warn(
+        'Unsolicited disconnect received from the broker, please reconnect',
+      );
+    }
   }
 }
