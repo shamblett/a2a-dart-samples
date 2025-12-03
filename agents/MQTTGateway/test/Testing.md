@@ -1,6 +1,6 @@
 # Test Procedure
 
-The easiest way to test the gateway is to is using the A2A CLI client or similar utility.
+The easiest way to test the gateway is using the A2A CLI client or similar utility.
 
 Start an MQTT broker on localhost using the standard(1883) MQTT port.
 
@@ -11,6 +11,13 @@ Start the A2A CLI client with the URL of the agent :-
 a2a_cli_client http://localhost:10004
 ```
 Check the gateway agent card is displayed correctly.
+```
+✓ Agent Card Found
+  Agent Name : MQTT Gateway Agent
+  Description : An agent that allows communication with MQTT devices.
+  Version : 1.0.0
+  Streaming supported
+```
 
 Perform the following test steps :-
 
@@ -64,7 +71,7 @@ Returns
 
 { "result" : "success", "messages" : [ { "payload" : "Hello from A2A 1", "timestamp" : "<Timestamp>" }, { "payload" : "Hello from A2A 2", "timestamp" : "<Timestamp>" } ] },
 
-where timestamp is a string in the form '2025-12-02T15:57:47'
+where <Timestamp> is a string in the form '2025-12-02T15:57:47'
 ```
 
 6. Get the same messages again
@@ -105,7 +112,8 @@ Returns
 { "result: : "not_connected" }
 ```
 
-End of procedure.
+Check the gateway agent log output, only info(blue) messages should be present, there should be no warning(yellow)
+or fatal(red) messages.
 
 
 

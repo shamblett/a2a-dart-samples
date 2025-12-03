@@ -2,7 +2,7 @@
 
 This sample agent acts as a gateway to the MQTT protocol.
 
-It uses an MQTT client to perform basic MQTT message exchange and session management along with
+It uses a V3.1.1 MQTT client to perform basic MQTT message exchange and session management along with
 status reporting.
 
 Specifically the agent supports :-
