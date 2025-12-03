@@ -55,7 +55,7 @@ final movieAgentCard = A2AAgentCard()
   ])
   ..supportsAuthenticatedExtendedCard = false;
 
-/// MovieAgentExecutor implements the agent's core logic.
+/// ContentEditorExecutor implements the agent's core logic.
 class ContentEditor implements A2AAgentExecutor {
   /// Executor construction helper.
   /// Late is OK here, a task cannot be cancelled until it has been created,
