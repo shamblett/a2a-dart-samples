@@ -1,6 +1,6 @@
 # 1.2.0
 Add the MQTT Gateway agent
-- [Issue 21](https://github.com/shamblett/a2a-dart-samples/issues/31)
+- [Issue 9](https://github.com/shamblett/a2a-dart-samples/issues/9)
 
 # 1.1.1
 Update to the latest A2A package
