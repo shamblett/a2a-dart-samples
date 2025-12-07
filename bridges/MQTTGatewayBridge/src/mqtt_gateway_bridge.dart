@@ -22,7 +22,7 @@ void main() async {
   MqttGatewayBridge mqttMcpBridge = MqttGatewayBridge();
   try {
     await mqttMcpBridge
-        .startServer(); // Set your port if you do not want the default
+        .startServer(port: 10005); // Set your port if you do not want the default
   } catch (e) {
     Log.fatal('MQTT Gateway Bridge failed to start $e');
     return;
