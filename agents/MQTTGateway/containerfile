@@ -4,6 +4,6 @@ FROM dart:3.9.2
 WORKDIR /app
 COPY . .
 RUN dart pub get
-RUN dart compile exe mqtt_gateway.dart
+RUN dart compile exe src/mqtt_gateway.dart
 EXPOSE 10004
-ENTRYPOINT ["/app/mqtt_gateway.exe"]
+ENTRYPOINT ["/app/src/mqtt_gateway.exe"]
