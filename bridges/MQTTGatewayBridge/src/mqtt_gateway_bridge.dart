@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_single_quotes
 /*
 * Package : a2a
 * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -13,6 +14,15 @@ import 'log.dart';
 /// MQTT Bridge
 ///
 class MqttGatewayBridge extends A2AMCPBridge {
+  /// MQTT Gateway Agent name
+  static const mqttGatewayAgentName = 'MQTT Gateway Agent';
+
+  /// Fail for send message
+  static const fail = '';
+
+  // The A2A Client
+  A2AClient? _client;
+
   MqttGatewayBridge() : super() {
     // Initialise the MQTT gateway tools
     _initialiseTools();
@@ -22,40 +32,110 @@ class MqttGatewayBridge extends A2AMCPBridge {
   Future<CallToolResult> _statusCallback({
     Map<String, dynamic>? args,
     RequestHandlerExtra? extra,
-  }) async {
-    if (args == null) {
-      Log.warn('_registerAgentCallback - args are null');
-      return CallToolResult.fromContent(
-        content: [TextContent(text: '_registerAgentCallback - args are null')],
-        isError: true,
-      );
-    }
-  }
+  }) async {}
 
   // Initialise the MQTT Gateway tools
   void _initialiseTools() {
     // Status
     // Get the status of the MQTT Gateway
-    var inputSchema = ToolInputSchema(
-      properties: {
-        "url": {"type": "string", "description": "The agent URL"},
-      },
-      required: ["url"],
-    );
+    var inputSchema = ToolInputSchema(properties: {});
     var outputSchema = ToolOutputSchema(
       properties: {
-        "agent_name": {"type": "string", "description": "Name of the agent"},
-        "url": {"type": "string", "description": "Url of the agent"},
+        "result": {
+          "type": "string",
+          "description": "The status of the MQTT Gateway",
+        },
       },
-      required: ["agent_name", "url"],
+      required: ["result"],
     );
     final registerAgent = Tool(
-      name: 'register_agent',
-      description: 'A2A Bridge Register Agent',
+      name: 'status',
+      description: 'MQTTGateway status',
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
     registerTool(registerAgent, _statusCallback);
+  }
+
+  // Create the A2A client
+  Future<void> _createA2AClient(String url) async {
+    _client = A2AClient(url);
+    await Future.delayed(Duration(seconds: 2));
+    Log.info('A2A client created for URL [$url]');
+  }
+
+  // Send a message to the MQTT Gateway
+  // Creates the A2A client if one is not yet created
+  // Returns the response, if empty a failure has occured
+  Future<String> _sendMessage(String message) async {
+    // Check if the A2A client has been created, if not create one
+    String url = '';
+    if (_client == null) {
+      if (isAgentRegistered(mqttGatewayAgentName)) {
+        final agentCard = registeredAgent(mqttGatewayAgentName);
+        if (agentCard == null) {
+          Log.fatal('MQTT Gateway agent is registered but has no agent card');
+          return fail;
+        }
+        url = agentCard.url;
+        await _createA2AClient(url);
+      }
+    } else {
+      Log.warn('MQTT Gateway agent is not yet registered, please register it');
+      return fail;
+    }
+
+    // Send the message
+    String responseText = fail;
+    try {
+      final taskId = uuid.v4();
+      addTaskToAgent(taskId, url);
+      final clientMessage = A2AMessage()
+        ..contextId = uuid.v4()
+        ..messageId = uuid.v4()
+        ..parts = [A2ATextPart()..text = message]
+        ..role = 'user';
+      final params = A2AMessageSendParams()
+        ..message = clientMessage
+        ..metadata = {"task_id": taskId};
+      // Process the response, only assemble text responses for now.
+      final response = await _client!.sendMessage(params);
+      if (response.isError) {
+        final errorResponse = response as A2AJSONRPCErrorResponseS;
+        Log.warn(
+          '_sendMessageCallback - error response ${errorResponse.error?.rpcErrorCode} from agent',
+        );
+        return fail;
+      } else {
+        final successResponse = response as A2ASendMessageSuccessResponse;
+        // Check for a message or task
+        if (successResponse.result is A2AMessage) {
+          final success = successResponse.result as A2AMessage;
+          final decodesParts = A2AUtilities.decodeParts(success.parts);
+          responseText += decodesParts.allText;
+        } else {
+          // Task, assume the task has completed Ok.
+          final success = successResponse.result as A2ATask;
+          if (success.status?.message != null) {
+            final decodesParts = A2AUtilities.decodeParts(
+              success.status?.message?.parts,
+            );
+            responseText += decodesParts.allText;
+          }
+          if (success.artifacts != null) {
+            for (final artifact in success.artifacts!) {
+              final decodesParts = A2AUtilities.decodeParts(artifact.parts);
+              responseText += decodesParts.allText;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      Log.warn('Exception raised in send Message, exception is $e');
+      return fail;
+    }
+    // Return the response
+    return responseText;
   }
 }
 
