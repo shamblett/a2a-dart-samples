@@ -6,9 +6,12 @@
 * Copyright :  S.Hamblett
 */
 
+import 'dart:convert';
+
 import 'package:a2a/a2a.dart';
 import 'package:mcp_dart/mcp_dart.dart';
 
+import 'gateway_command.dart';
 import 'log.dart';
 
 /// MQTT Bridge
@@ -32,7 +35,30 @@ class MqttGatewayBridge extends A2AMCPBridge {
   Future<CallToolResult> _statusCallback({
     Map<String, dynamic>? args,
     RequestHandlerExtra? extra,
-  }) async {}
+  }) async {
+    // No arguments, just build and send the command.
+    final GWCommand command = {};
+    command[GatewayCommand.command] = GatewayCommand.status;
+    final gwCommand = json.encode(command);
+    final res = await _sendMessage(gwCommand);
+
+    // Check the result
+    if (res == fail) {
+      Log.warn('Status command failed');
+      return CallToolResult.fromContent(
+        content: [TextContent(text: '_statusCallback - status command failed')],
+        isError: true,
+      );
+    }
+
+    final content = {
+      "content": [
+        {"type": "text", "text": res},
+      ],
+      "structuredContent": res,
+    };
+    return CallToolResult.fromJson(content);
+  }
 
   // Initialise the MQTT Gateway tools
   void _initialiseTools() {
