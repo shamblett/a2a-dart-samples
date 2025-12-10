@@ -46,4 +46,33 @@ Future<void> main() async {
     expect(serverVersion?.name, 'MQTT Gateway Bridge');
     expect(serverVersion?.version, '1.0.0');
   });
+
+  test('Status - not registered', () async {
+    final params = CallToolRequestParams(name: 'status');
+    final result = await client.callTool(params);
+    expect(result.isError, isTrue);
+    final content = result.content;
+    expect(content.first.type, 'text');
+    expect(
+      (content.first as TextContent).text,
+      '_statusCallback - status command failed',
+    );
+  });
+
+  test('Status - valid', () async {
+    final paramsRegister = CallToolRequestParams(
+      name: 'register_agent',
+      arguments: {'url': agentUrl},
+    );
+    var result = await client.callTool(paramsRegister);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    expect(content['agent_name'], 'MQTT Gateway Agent');
+    expect(content['url'], agentUrl);
+    final paramsStatus = CallToolRequestParams(name: 'status');
+    result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    content = result.structuredContent;
+    expect(content, {'result': 'not_connected'});
+  });
 }

@@ -52,11 +52,12 @@ class MqttGatewayBridge extends A2AMCPBridge {
       );
     }
 
+    final result = json.decode(res);
     final content = {
       "content": [
-        {"type": "text", "text": res},
+        {"type": "text", "text": json.encode(result)},
       ],
-      "structuredContent": res,
+      "structuredContent": result,
     };
     return CallToolResult.fromJson(content);
   }
@@ -106,10 +107,12 @@ class MqttGatewayBridge extends A2AMCPBridge {
         }
         url = agentCard.url;
         await _createA2AClient(url);
+      } else {
+        Log.warn(
+          'MQTT Gateway agent is not yet registered, please register it',
+        );
+        return fail;
       }
-    } else {
-      Log.warn('MQTT Gateway agent is not yet registered, please register it');
-      return fail;
     }
 
     // Send the message
