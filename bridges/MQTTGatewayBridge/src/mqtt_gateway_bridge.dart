@@ -17,8 +17,9 @@ import 'log.dart';
 /// MQTT Bridge
 ///
 class MqttGatewayBridge extends A2AMCPBridge {
-  /// MQTT Gateway Agent name
   static const mqttGatewayAgentName = 'MQTT Gateway Agent';
+  static const serverName = 'MQTT Gateway Bridge';
+  static const serverVersion = '1.0.0';
 
   /// Fail for send message
   static const fail = '';
@@ -26,7 +27,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
   // The A2A Client
   A2AClient? _client;
 
-  MqttGatewayBridge() : super() {
+  MqttGatewayBridge({super.name, super.version}) : super() {
     // Initialise the MQTT gateway tools
     _initialiseTools();
   }
@@ -169,7 +170,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
 void main() async {
   // Create and start the bridge
   Log.info('Creating the MQTT Gateway Bridge');
-  MqttGatewayBridge mqttMcpBridge = MqttGatewayBridge();
+  MqttGatewayBridge mqttMcpBridge = MqttGatewayBridge(
+    name: MqttGatewayBridge.serverName,
+    version: MqttGatewayBridge.serverVersion,
+  );
   try {
     await mqttMcpBridge.startServer(
       port: 10005,

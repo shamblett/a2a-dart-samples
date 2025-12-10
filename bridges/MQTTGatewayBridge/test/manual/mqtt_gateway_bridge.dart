@@ -43,7 +43,7 @@ Future<void> main() async {
   test('Server Version', () async {
     final serverVersion = client.getServerVersion();
     expect(serverVersion, isNotNull);
-    expect(serverVersion?.name, 'A2A MCP Bridge Server');
+    expect(serverVersion?.name, 'MQTT Gateway Bridge');
     expect(serverVersion?.version, '1.0.0');
   });
 }
