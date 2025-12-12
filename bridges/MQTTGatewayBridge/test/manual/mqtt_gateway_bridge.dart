@@ -35,6 +35,7 @@ final clientTransport = StreamableHttpClientTransport(
 );
 
 const agentUrl = 'http://localhost:10004';
+const brokerUrl = 'localhost';
 bool gatewayIsRegistered = false;
 
 Future<void> registerGateway(Client client) async {
@@ -94,5 +95,14 @@ Future<void> main() async {
       (content.first as TextContent).text,
       '_connectCallback - args are null',
     );
+  });
+  test('Connect - basic', () async {
+    await registerGateway(client);
+    final paramsStatus = CallToolRequestParams(name: 'connect',
+      arguments: {'broker_url': brokerUrl},);
+    var result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    expect(content, {'result': 'success'});
   });
 }
