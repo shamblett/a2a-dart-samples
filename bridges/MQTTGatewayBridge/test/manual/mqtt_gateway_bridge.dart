@@ -35,6 +35,22 @@ final clientTransport = StreamableHttpClientTransport(
 );
 
 const agentUrl = 'http://localhost:10004';
+bool gatewayIsRegistered = false;
+
+Future<void> registerGateway(Client client) async {
+  if (!gatewayIsRegistered) {
+    final paramsRegister = CallToolRequestParams(
+      name: 'register_agent',
+      arguments: {'url': agentUrl},
+    );
+    var result = await client.callTool(paramsRegister);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    expect(content['agent_name'], 'MQTT Gateway Agent');
+    expect(content['url'], agentUrl);
+    gatewayIsRegistered = true;
+  }
+}
 
 Future<void> main() async {
   // Start the client
@@ -60,19 +76,23 @@ Future<void> main() async {
   });
 
   test('Status - valid', () async {
-    final paramsRegister = CallToolRequestParams(
-      name: 'register_agent',
-      arguments: {'url': agentUrl},
-    );
-    var result = await client.callTool(paramsRegister);
+    await registerGateway(client);
+    final paramsStatus = CallToolRequestParams(name: 'status');
+    var result = await client.callTool(paramsStatus);
     expect(result.isError, isNull);
     var content = result.structuredContent;
-    expect(content['agent_name'], 'MQTT Gateway Agent');
-    expect(content['url'], agentUrl);
-    final paramsStatus = CallToolRequestParams(name: 'status');
-    result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
-    content = result.structuredContent;
     expect(content, {'result': 'not_connected'});
+  });
+  test('Connect - no args', () async {
+    await registerGateway(client);
+    final paramsStatus = CallToolRequestParams(name: 'connect');
+    var result = await client.callTool(paramsStatus);
+    expect(result.isError, isTrue);
+    final content = result.content;
+    expect(content.first.type, 'text');
+    expect(
+      (content.first as TextContent).text,
+      '_connectCallback - args are null',
+    );
   });
 }
