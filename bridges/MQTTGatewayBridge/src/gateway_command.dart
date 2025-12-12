@@ -5,7 +5,7 @@
 * Copyright :  S.Hamblett
 */
 
-typedef GWCommand = Map<String,String>;
+typedef GWCommand = Map<String,dynamic>;
 
 ///
 /// MQTT Gateway command support.

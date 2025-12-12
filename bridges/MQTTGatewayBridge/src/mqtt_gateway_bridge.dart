@@ -62,6 +62,46 @@ class MqttGatewayBridge extends A2AMCPBridge {
     return CallToolResult.fromJson(content);
   }
 
+  // Status callback
+  Future<CallToolResult> _connectCallback({
+    Map<String, dynamic>? args,
+    RequestHandlerExtra? extra,
+  }) async {
+    if (args == null) {
+      Log.warn('_connectCallback - args are null');
+      return CallToolResult.fromContent(
+        content: [TextContent(text: '_connectCallback - args are null')],
+        isError: true,
+      );
+    }
+
+    // Build and send the command.
+    final GWCommand command = args;
+    command[GatewayCommand.command] = GatewayCommand.connect;
+    final gwCommand = json.encode(command);
+    final res = await _sendMessage(gwCommand);
+
+    // Check the result
+    if (res == fail) {
+      Log.warn('Connect command failed');
+      return CallToolResult.fromContent(
+        content: [
+          TextContent(text: '_connectCallback - connect command failed'),
+        ],
+        isError: true,
+      );
+    }
+
+    final result = json.decode(res);
+    final content = {
+      "content": [
+        {"type": "text", "text": json.encode(result)},
+      ],
+      "structuredContent": result,
+    };
+    return CallToolResult.fromJson(content);
+  }
+
   // Initialise the MQTT Gateway tools
   void _initialiseTools() {
     // Status
@@ -76,13 +116,56 @@ class MqttGatewayBridge extends A2AMCPBridge {
       },
       required: ["result"],
     );
-    final registerAgent = Tool(
+    var registerAgent = Tool(
       name: 'status',
       description: 'MQTTGateway status',
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
     registerTool(registerAgent, _statusCallback);
+
+    // Connect
+    inputSchema = ToolInputSchema(
+      properties: {
+        "broker_url": {
+          "type": "string",
+          "description": "URL of the MQTT broker",
+        },
+        "port": {
+          "type": "integer",
+          "description": "The MQTT Broker port if not 1883",
+        },
+        "client_id": {
+          "type": "String",
+          "description": "The MQTT client id to use",
+        },
+        "user_name": {
+          "type": "String",
+          "description": "The MQTT Broker user name",
+        },
+        "password": {
+          "type": "String",
+          "description": "The MQTT Broker password",
+        },
+      },
+      required: ["broker_url"],
+    );
+    outputSchema = ToolOutputSchema(
+      properties: {
+        "result": {
+          "type": "string",
+          "description": "The connect command success/fail indicator",
+        },
+      },
+      required: ["result"],
+    );
+    registerAgent = Tool(
+      name: 'connect',
+      description: 'Connect the MQTT Gateway to an MQTT Broker',
+      inputSchema: inputSchema,
+      outputSchema: outputSchema,
+    );
+    registerTool(registerAgent, _connectCallback);
   }
 
   // Create the A2A client
