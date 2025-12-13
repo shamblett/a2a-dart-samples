@@ -41,6 +41,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     final GWCommand command = {};
     command[GatewayCommand.command] = GatewayCommand.status;
     final gwCommand = json.encode(command);
+    Log.info('Sending status command');
     final res = await _sendMessage(gwCommand);
 
     // Check the result
@@ -79,6 +80,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     final GWCommand command = args;
     command[GatewayCommand.command] = GatewayCommand.connect;
     final gwCommand = json.encode(command);
+    Log.info('Sending connect command');
     final res = await _sendMessage(gwCommand);
 
     // Check the result

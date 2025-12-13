@@ -98,11 +98,18 @@ Future<void> main() async {
   });
   test('Connect - basic', () async {
     await registerGateway(client);
-    final paramsStatus = CallToolRequestParams(name: 'connect',
-      arguments: {'broker_url': brokerUrl},);
+    var paramsStatus = CallToolRequestParams(
+      name: 'connect',
+      arguments: {'broker_url': brokerUrl},
+    );
     var result = await client.callTool(paramsStatus);
     expect(result.isError, isNull);
     var content = result.structuredContent;
     expect(content, {'result': 'success'});
+    paramsStatus = CallToolRequestParams(name: 'status');
+    result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    content = result.structuredContent;
+    expect(content, {'result': 'connected'});
   });
 }
