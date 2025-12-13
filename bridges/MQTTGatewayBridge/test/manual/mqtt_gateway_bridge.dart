@@ -96,7 +96,7 @@ Future<void> main() async {
       '_connectCallback - args are null',
     );
   });
-  test('Connect - basic', () async {
+  test('Connect', () async {
     await registerGateway(client);
     var paramsStatus = CallToolRequestParams(
       name: 'connect',
@@ -111,5 +111,16 @@ Future<void> main() async {
     expect(result.isError, isNull);
     content = result.structuredContent;
     expect(content, {'result': 'connected'});
+  });
+  test('Subscribe', () async {
+    await registerGateway(client);
+    var paramsStatus = CallToolRequestParams(
+      name: 'subscribe',
+      arguments: {'topic': 'theTopic'},
+    );
+    var result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    expect(content, {'result': 'success'});
   });
 }

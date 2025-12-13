@@ -63,7 +63,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     return CallToolResult.fromJson(content);
   }
 
-  // Status callback
+  // Connect callback
   Future<CallToolResult> _connectCallback({
     Map<String, dynamic>? args,
     RequestHandlerExtra? extra,
@@ -104,10 +104,210 @@ class MqttGatewayBridge extends A2AMCPBridge {
     return CallToolResult.fromJson(content);
   }
 
+  // Subscribe callback
+  Future<CallToolResult> _subscribeCallback({
+    Map<String, dynamic>? args,
+    RequestHandlerExtra? extra,
+  }) async {
+    if (args == null) {
+      Log.warn('_subscribeCallback - args are null');
+      return CallToolResult.fromContent(
+        content: [TextContent(text: '_subscribeCallback - args are null')],
+        isError: true,
+      );
+    }
+
+    // Build and send the command.
+    final GWCommand command = args;
+    command[GatewayCommand.command] = GatewayCommand.subscribe;
+    final gwCommand = json.encode(command);
+    Log.info('Sending a subscribe command');
+    final res = await _sendMessage(gwCommand);
+
+    // Check the result
+    if (res == fail) {
+      Log.warn('Subscribe command failed');
+      return CallToolResult.fromContent(
+        content: [
+          TextContent(text: '_subscribeCallback - subscribe command failed'),
+        ],
+        isError: true,
+      );
+    }
+
+    final result = json.decode(res);
+    final content = {
+      "content": [
+        {"type": "text", "text": json.encode(result)},
+      ],
+      "structuredContent": result,
+    };
+    return CallToolResult.fromJson(content);
+  }
+
+  // Unsubscribe callback
+  Future<CallToolResult> _unsubscribeCallback({
+    Map<String, dynamic>? args,
+    RequestHandlerExtra? extra,
+  }) async {
+    if (args == null) {
+      Log.warn('_unsubscribeCallback - args are null');
+      return CallToolResult.fromContent(
+        content: [TextContent(text: '_unsubscribeCallback - args are null')],
+        isError: true,
+      );
+    }
+
+    // Build and send the command.
+    final GWCommand command = args;
+    command[GatewayCommand.command] = GatewayCommand.unsubscribe;
+    final gwCommand = json.encode(command);
+    Log.info('Sending an unsubscribe command');
+    final res = await _sendMessage(gwCommand);
+
+    // Check the result
+    if (res == fail) {
+      Log.warn('Unsubscribe command failed');
+      return CallToolResult.fromContent(
+        content: [
+          TextContent(
+            text: '_unsubscribeCallback - unsubscribe command failed',
+          ),
+        ],
+        isError: true,
+      );
+    }
+
+    final result = json.decode(res);
+    final content = {
+      "content": [
+        {"type": "text", "text": json.encode(result)},
+      ],
+      "structuredContent": result,
+    };
+    return CallToolResult.fromJson(content);
+  }
+
+  // Publish callback
+  Future<CallToolResult> _publishCallback({
+    Map<String, dynamic>? args,
+    RequestHandlerExtra? extra,
+  }) async {
+    if (args == null) {
+      Log.warn('_publishCallback - args are null');
+      return CallToolResult.fromContent(
+        content: [TextContent(text: '_publishCallback - args are null')],
+        isError: true,
+      );
+    }
+
+    // Build and send the command.
+    final GWCommand command = args;
+    command[GatewayCommand.command] = GatewayCommand.publish;
+    final gwCommand = json.encode(command);
+    Log.info('Sending a publish command');
+    final res = await _sendMessage(gwCommand);
+
+    // Check the result
+    if (res == fail) {
+      Log.warn('Publish command failed');
+      return CallToolResult.fromContent(
+        content: [
+          TextContent(text: '_publishCallback - publish command failed'),
+        ],
+        isError: true,
+      );
+    }
+
+    final result = json.decode(res);
+    final content = {
+      "content": [
+        {"type": "text", "text": json.encode(result)},
+      ],
+      "structuredContent": result,
+    };
+    return CallToolResult.fromJson(content);
+  }
+
+  // Get messages callback
+  Future<CallToolResult> _getMessagesCallback({
+    Map<String, dynamic>? args,
+    RequestHandlerExtra? extra,
+  }) async {
+    if (args == null) {
+      Log.warn('_getMessagesCallback - args are null');
+      return CallToolResult.fromContent(
+        content: [TextContent(text: '_getMessagesCallback - args are null')],
+        isError: true,
+      );
+    }
+
+    // Build and send the command.
+    final GWCommand command = args;
+    command[GatewayCommand.command] = GatewayCommand.messages;
+    final gwCommand = json.encode(command);
+    Log.info('Sending a get messages command');
+    final res = await _sendMessage(gwCommand);
+
+    // Check the result
+    if (res == fail) {
+      Log.warn('get messages command failed');
+      return CallToolResult.fromContent(
+        content: [
+          TextContent(
+            text: '_getMessagesCallback - get messages command failed',
+          ),
+        ],
+        isError: true,
+      );
+    }
+
+    final result = json.decode(res);
+    final content = {
+      "content": [
+        {"type": "text", "text": json.encode(result)},
+      ],
+      "structuredContent": result,
+    };
+    return CallToolResult.fromJson(content);
+  }
+
+  // Disconnect callback
+  Future<CallToolResult> _disconnectCallback({
+    Map<String, dynamic>? args,
+    RequestHandlerExtra? extra,
+  }) async {
+    // No arguments, just build and send the command.
+    final GWCommand command = {};
+    command[GatewayCommand.command] = GatewayCommand.disconnect;
+    final gwCommand = json.encode(command);
+    Log.info('Sending disconnect command');
+    final res = await _sendMessage(gwCommand);
+
+    // Check the result
+    if (res == fail) {
+      Log.warn('Disconnect command failed');
+      return CallToolResult.fromContent(
+        content: [
+          TextContent(text: '_disconnectCallback - disconnect command failed'),
+        ],
+        isError: true,
+      );
+    }
+
+    final result = json.decode(res);
+    final content = {
+      "content": [
+        {"type": "text", "text": json.encode(result)},
+      ],
+      "structuredContent": result,
+    };
+    return CallToolResult.fromJson(content);
+  }
+
   // Initialise the MQTT Gateway tools
   void _initialiseTools() {
     // Status
-    // Get the status of the MQTT Gateway
     var inputSchema = ToolInputSchema(properties: {});
     var outputSchema = ToolOutputSchema(
       properties: {
@@ -168,6 +368,136 @@ class MqttGatewayBridge extends A2AMCPBridge {
       outputSchema: outputSchema,
     );
     registerTool(registerAgent, _connectCallback);
+
+    // Subscribe
+    inputSchema = ToolInputSchema(
+      properties: {
+        "topic": {"type": "string", "description": "The subscription topic"},
+        "qos": {
+          "type": "integer",
+          "description": "The QoS for the subscription",
+        },
+      },
+      required: ["topic"],
+    );
+    outputSchema = ToolOutputSchema(
+      properties: {
+        "result": {
+          "type": "string",
+          "description": "The subscribe command success/fail indicator",
+        },
+      },
+      required: ["result"],
+    );
+    registerAgent = Tool(
+      name: 'subscribe',
+      description: 'Subscribe to an MQTT topic',
+      inputSchema: inputSchema,
+      outputSchema: outputSchema,
+    );
+    registerTool(registerAgent, _subscribeCallback);
+
+    // Unsubscribe
+    inputSchema = ToolInputSchema(
+      properties: {
+        "topic": {"type": "string", "description": "The unsubscription topic"},
+      },
+      required: ["topic"],
+    );
+    outputSchema = ToolOutputSchema(
+      properties: {
+        "result": {
+          "type": "string",
+          "description": "The unsubscribe command success/fail indicator",
+        },
+      },
+      required: ["result"],
+    );
+    registerAgent = Tool(
+      name: 'unsubscribe',
+      description: 'Unsubscribe from an MQTT topic',
+      inputSchema: inputSchema,
+      outputSchema: outputSchema,
+    );
+    registerTool(registerAgent, _unsubscribeCallback);
+
+    // Publish
+    inputSchema = ToolInputSchema(
+      properties: {
+        "topic": {
+          "type": "string",
+          "description": "The MQTT topic to publish to",
+        },
+        "qos": {
+          "type": "integer",
+          "description": "The QoS for the published message",
+        },
+        "payload": {
+          "type": "String",
+          "description": "The payload of the published message",
+        },
+      },
+      required: ["topic", "payload"],
+    );
+    outputSchema = ToolOutputSchema(
+      properties: {
+        "result": {
+          "type": "string",
+          "description": "The publish command success/fail indicator",
+        },
+      },
+      required: ["result"],
+    );
+    registerAgent = Tool(
+      name: 'publish',
+      description: 'Publish an MQTT message',
+      inputSchema: inputSchema,
+      outputSchema: outputSchema,
+    );
+    registerTool(registerAgent, _publishCallback);
+
+    // Get Messages
+    inputSchema = ToolInputSchema(
+      properties: {
+        "topic": {"type": "string", "description": "The message topic"},
+      },
+      required: ["topic"],
+    );
+    outputSchema = ToolOutputSchema(
+      properties: {
+        "result": {
+          "type": "string",
+          "description": "The get messages command success/fail indicator",
+        },
+      },
+      required: ["result"],
+    );
+    registerAgent = Tool(
+      name: 'get_messages',
+      description: 'Get received messages from an MQTT topic',
+      inputSchema: inputSchema,
+      outputSchema: outputSchema,
+    );
+    registerTool(registerAgent, _getMessagesCallback);
+
+    // Disconnect
+    inputSchema = ToolInputSchema(properties: {});
+    outputSchema = ToolOutputSchema(
+      properties: {
+        "result": {
+          "type": "string",
+          "description": "The disconnect command success indicator",
+        },
+      },
+      required: ["result"],
+    );
+    registerAgent = Tool(
+      name: 'disconnect',
+      description: 'MQTTGateway disconnect command',
+      inputSchema: inputSchema,
+      outputSchema: outputSchema,
+    );
+    registerTool(registerAgent, _disconnectCallback);
   }
 
   // Create the A2A client
@@ -179,7 +509,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
 
   // Send a message to the MQTT Gateway
   // Creates the A2A client if one is not yet created
-  // Returns the response, if empty a failure has occured
+  // Returns the response, if empty a failure has occurred
   Future<String> _sendMessage(String message) async {
     // Check if the A2A client has been created, if not create one
     String url = '';
