@@ -1,8 +1,11 @@
 @TestOn('vm')
 library;
 
+import 'dart:convert';
+
 import 'package:test/test.dart';
 
+import 'package:a2a/a2a.dart';
 import 'package:mcp_dart/mcp_dart.dart';
 
 class AuthProvider implements OAuthClientProvider {
@@ -36,21 +39,17 @@ final clientTransport = StreamableHttpClientTransport(
 
 const agentUrl = 'http://localhost:10004';
 const brokerUrl = 'localhost';
-bool gatewayIsRegistered = false;
 
 Future<void> registerGateway(Client client) async {
-  if (!gatewayIsRegistered) {
-    final paramsRegister = CallToolRequestParams(
-      name: 'register_agent',
-      arguments: {'url': agentUrl},
-    );
-    var result = await client.callTool(paramsRegister);
-    expect(result.isError, isNull);
-    var content = result.structuredContent;
-    expect(content['agent_name'], 'MQTT Gateway Agent');
-    expect(content['url'], agentUrl);
-    gatewayIsRegistered = true;
-  }
+  final paramsRegister = CallToolRequestParams(
+    name: 'register_agent',
+    arguments: {'url': agentUrl},
+  );
+  var result = await client.callTool(paramsRegister);
+  expect(result.isError, isNull);
+  var content = result.structuredContent;
+  expect(content['agent_name'], 'MQTT Gateway Agent');
+  expect(content['url'], agentUrl);
 }
 
 Future<void> main() async {
@@ -85,7 +84,6 @@ Future<void> main() async {
     expect(content, {'result': 'not_connected'});
   });
   test('Connect - no args', () async {
-    await registerGateway(client);
     final paramsStatus = CallToolRequestParams(name: 'connect');
     var result = await client.callTool(paramsStatus);
     expect(result.isError, isTrue);
@@ -97,7 +95,6 @@ Future<void> main() async {
     );
   });
   test('Connect', () async {
-    await registerGateway(client);
     var paramsStatus = CallToolRequestParams(
       name: 'connect',
       arguments: {'broker_url': brokerUrl},
@@ -113,7 +110,6 @@ Future<void> main() async {
     expect(content, {'result': 'connected'});
   });
   test('Subscribe', () async {
-    await registerGateway(client);
     var paramsStatus = CallToolRequestParams(
       name: 'subscribe',
       arguments: {'topic': 'theTopic'},
@@ -122,5 +118,51 @@ Future<void> main() async {
     expect(result.isError, isNull);
     var content = result.structuredContent;
     expect(content, {'result': 'success'});
+  });
+  test('Publish', () async {
+    var paramsStatus = CallToolRequestParams(
+      name: 'publish',
+      arguments: {'topic': 'theTopic', 'payload': 'thePayload'},
+    );
+    var result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    expect(content, {'result': 'success'});
+  });
+  test('Get Messages', () async {
+    var paramsStatus = CallToolRequestParams(
+      name: 'get_messages',
+      arguments: {'topic': 'theTopic'},
+    );
+    var result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    final tn = A2AUtilities.getCurrentTimestamp().split('.').first;
+    expect(
+      json.encode(content),
+      '{"result":"success","messages":[{"payload":"thePayload","timestamp":"$tn"}]}',
+    );
+  });
+  test('Unsubscribe', () async {
+    var paramsStatus = CallToolRequestParams(
+      name: 'unsubscribe',
+      arguments: {'topic': 'theTopic'},
+    );
+    var result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    expect(content, {'result': 'success'});
+  });
+  test('Disconnect', () async {
+    var paramsStatus = CallToolRequestParams(name: 'disconnect');
+    var result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    var content = result.structuredContent;
+    expect(content, {'result': 'success'});
+    paramsStatus = CallToolRequestParams(name: 'status');
+    result = await client.callTool(paramsStatus);
+    expect(result.isError, isNull);
+    content = result.structuredContent;
+    expect(content, {'result': 'not_connected'});
   });
 }
