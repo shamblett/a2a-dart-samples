@@ -18,6 +18,6 @@ It also provides the following tools to allow interfacing to the A2A MQTT Gatewa
 Please see the A2A MQTT Gateway [sample](ttps://github.com/shamblett/a2a-dart-samples/tree/main/agents/MQTTGateway) 
 for further details of the MQTT implementation and the agent command protocol.
 
-The tools above accept the same parameters as those accepted by the MQTT Gateway itself.
+The tools above accept the same parameters as those accepted by the MQTT Gateway Agent itself.
 
 See the comment at the top of the containerfile for instructions on how to build and run the bridge as a podman container.

@@ -6,4 +6,4 @@ COPY . .
 RUN dart pub get
 RUN dart compile exe src/mqtt_gateway_bridge.dart
 EXPOSE 10005
-ENTRYPOINT ["/app/src/mqtt_gateway.exe"]
+ENTRYPOINT ["/app/src/mqtt_gateway_bridge.exe"]
