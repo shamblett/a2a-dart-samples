@@ -1,0 +1,19 @@
+name: mqtt_gateway_bridge
+description: An implementation of an MCP bridge server for the MQTT Gateway agent.
+version: 1.0.0
+repository: https://github.com/shamblett/a2a-dart-samples/bridges/MQTTGatewayBridge
+publish_to: none
+funding:
+  - https://www.darticulate.com/#funding
+
+environment:
+  sdk: '>=3.9.0 <4.0.0'
+
+dependencies:
+    colorize: '^3.0.0'
+    a2a: '^3.2.1'
+    mcp_dart: '^1.0.2'
+
+dev_dependencies:
+  lints: '^6.0.0'
+  test: '^1.26.3'
