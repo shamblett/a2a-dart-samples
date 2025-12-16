@@ -15,7 +15,7 @@ It also provides the following tools to allow interfacing to the A2A MQTT Gatewa
 4. Get messages received on an MQTT topic
 5. Query the status of the MQTT Gateway
 
-Please see the A2A MQTT Gateway [sample](ttps://github.com/shamblett/a2a-dart-samples/tree/main/agents/MQTTGateway) 
+Please see the A2A MQTT Gateway [sample](https://github.com/shamblett/a2a-dart-samples/tree/main/agents/MQTTGateway) 
 for further details of the MQTT implementation and the agent command protocol.
 
 The tools above accept the same parameters as those accepted by the MQTT Gateway Agent itself.
