@@ -1,3 +1,7 @@
+# 1.3.0
+Add the MQTT Gateway MCP Bridge server
+- [Issue 13](https://github.com/shamblett/a2a-dart-samples/issues/13)
+- 
 # 1.2.0
 Add the MQTT Gateway agent
 - [Issue 9](https://github.com/shamblett/a2a-dart-samples/issues/9)
