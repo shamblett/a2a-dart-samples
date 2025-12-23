@@ -9,6 +9,7 @@
 import 'dart:convert';
 
 import 'package:a2a/a2a.dart';
+import 'package:a2a_mcp_bridge/a2a_mcp_bridge.dart';
 import 'package:mcp_dart/mcp_dart.dart';
 
 import 'gateway_command.dart';
