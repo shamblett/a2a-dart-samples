@@ -1,3 +1,7 @@
+# 1.3.1
+Update to the a2a_mcp_bridge package
+- [Issue 15](https://github.com/shamblett/a2a-dart-samples/issues/15)
+
 # 1.3.0
 Add the MQTT Gateway MCP Bridge server
 - [Issue 13](https://github.com/shamblett/a2a-dart-samples/issues/13)
