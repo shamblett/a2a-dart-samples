@@ -9,7 +9,7 @@
 import 'dart:convert';
 
 import 'package:a2a/a2a.dart';
-import 'package:a2a_mcp_bridge/a2a_mcp_bridge.dart' as bridge;
+import 'package:a2a_mcp_bridge/a2a_mcp_bridge.dart';
 import 'package:mcp_dart/mcp_dart.dart';
 
 import 'gateway_command.dart';
@@ -17,7 +17,7 @@ import 'log.dart';
 
 /// MQTT Bridge
 ///
-class MqttGatewayBridge extends bridge.A2AMCPBridge {
+class MqttGatewayBridge extends A2AMCPBridge {
   static const mqttGatewayAgentName = 'MQTT Gateway Agent';
   static const serverName = 'MQTT Gateway Bridge';
   static const serverVersion = '1.0.0';

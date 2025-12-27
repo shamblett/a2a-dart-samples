@@ -11,9 +11,9 @@ environment:
 
 dependencies:
     colorize: '^3.0.0'
-    a2a_mcp_bridge: '^1.0.0'
+    a2a_mcp_bridge: '^1.0.1'
     mcp_dart: '1.0.2'
-    a2a: '^3.3.0'
+    a2a: '^4.0.0'
 
 dev_dependencies:
   lints: '^6.0.0'
