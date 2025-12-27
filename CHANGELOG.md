@@ -1,3 +1,7 @@
+# 1.3.2
+Update to a2a 4.0.0
+- [Issue 17](https://github.com/shamblett/a2a-dart-samples/issues/17)
+
 # 1.3.1
 Update to the a2a_mcp_bridge package
 - [Issue 15](https://github.com/shamblett/a2a-dart-samples/issues/15)
