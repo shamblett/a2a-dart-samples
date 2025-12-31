@@ -41,14 +41,14 @@ const agentUrl = 'http://localhost:10004';
 const brokerUrl = 'localhost';
 
 Future<void> registerGateway(Client client) async {
-  final paramsRegister = CallToolRequestParams(
+  final paramsRegister = CallToolRequest(
     name: 'register_agent',
     arguments: {'url': agentUrl},
   );
   var result = await client.callTool(paramsRegister);
-  expect(result.isError, isNull);
+  expect(result.isError, isFalse);
   var content = result.structuredContent;
-  expect(content['agent_name'], 'MQTT Gateway Agent');
+  expect(content!['agent_name'], 'MQTT Gateway Agent');
   expect(content['url'], agentUrl);
 }
 
@@ -64,7 +64,7 @@ Future<void> main() async {
   });
 
   test('Status - not registered', () async {
-    final params = CallToolRequestParams(name: 'status');
+    final params = CallToolRequest(name: 'status');
     final result = await client.callTool(params);
     expect(result.isError, isTrue);
     final content = result.content;
@@ -77,14 +77,14 @@ Future<void> main() async {
 
   test('Status - valid', () async {
     await registerGateway(client);
-    final paramsStatus = CallToolRequestParams(name: 'status');
+    final paramsStatus = CallToolRequest(name: 'status');
     var result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     var content = result.structuredContent;
     expect(content, {'result': 'not_connected'});
   });
   test('Connect - no args', () async {
-    final paramsStatus = CallToolRequestParams(name: 'connect');
+    final paramsStatus = CallToolRequest(name: 'connect');
     var result = await client.callTool(paramsStatus);
     expect(result.isError, isTrue);
     final content = result.content;
@@ -95,47 +95,47 @@ Future<void> main() async {
     );
   });
   test('Connect', () async {
-    var paramsStatus = CallToolRequestParams(
+    var paramsStatus = CallToolRequest(
       name: 'connect',
       arguments: {'broker_url': brokerUrl},
     );
     var result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     var content = result.structuredContent;
     expect(content, {'result': 'success'});
-    paramsStatus = CallToolRequestParams(name: 'status');
+    paramsStatus = CallToolRequest(name: 'status');
     result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     content = result.structuredContent;
     expect(content, {'result': 'connected'});
   });
   test('Subscribe', () async {
-    var paramsStatus = CallToolRequestParams(
+    var paramsStatus = CallToolRequest(
       name: 'subscribe',
       arguments: {'topic': 'theTopic'},
     );
     var result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     var content = result.structuredContent;
     expect(content, {'result': 'success'});
   });
   test('Publish', () async {
-    var paramsStatus = CallToolRequestParams(
+    var paramsStatus = CallToolRequest(
       name: 'publish',
       arguments: {'topic': 'theTopic', 'payload': 'thePayload'},
     );
     var result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     var content = result.structuredContent;
     expect(content, {'result': 'success'});
   });
   test('Get Messages', () async {
-    var paramsStatus = CallToolRequestParams(
+    var paramsStatus = CallToolRequest(
       name: 'get_messages',
       arguments: {'topic': 'theTopic'},
     );
     var result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     var content = result.structuredContent;
     final tn = A2AUtilities.getCurrentTimestamp().split('.').first;
     expect(
@@ -144,24 +144,24 @@ Future<void> main() async {
     );
   });
   test('Unsubscribe', () async {
-    var paramsStatus = CallToolRequestParams(
+    var paramsStatus = CallToolRequest(
       name: 'unsubscribe',
       arguments: {'topic': 'theTopic'},
     );
     var result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     var content = result.structuredContent;
     expect(content, {'result': 'success'});
   });
   test('Disconnect', () async {
-    var paramsStatus = CallToolRequestParams(name: 'disconnect');
+    var paramsStatus = CallToolRequest(name: 'disconnect');
     var result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     var content = result.structuredContent;
     expect(content, {'result': 'success'});
-    paramsStatus = CallToolRequestParams(name: 'status');
+    paramsStatus = CallToolRequest(name: 'status');
     result = await client.callTool(paramsStatus);
-    expect(result.isError, isNull);
+    expect(result.isError, isFalse);
     content = result.structuredContent;
     expect(content, {'result': 'not_connected'});
   });
