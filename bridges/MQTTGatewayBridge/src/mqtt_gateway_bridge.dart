@@ -34,10 +34,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
   }
 
   // Status callback
-  Future<CallToolResult> _statusCallback({
-    Map<String, dynamic>? args,
-    RequestHandlerExtra? extra,
-  }) async {
+  Future<CallToolResult> _statusCallback(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) async {
     // No arguments, just build and send the command.
     final GWCommand command = {};
     command[GatewayCommand.command] = GatewayCommand.status;
@@ -48,7 +48,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     // Check the result
     if (res == fail) {
       Log.warn('Status command failed');
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [TextContent(text: '_statusCallback - status command failed')],
         isError: true,
       );
@@ -65,18 +65,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
   }
 
   // Connect callback
-  Future<CallToolResult> _connectCallback({
-    Map<String, dynamic>? args,
-    RequestHandlerExtra? extra,
-  }) async {
-    if (args == null) {
-      Log.warn('_connectCallback - args are null');
-      return CallToolResult.fromContent(
-        content: [TextContent(text: '_connectCallback - args are null')],
-        isError: true,
-      );
-    }
-
+  Future<CallToolResult> _connectCallback(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) async {
     // Build and send the command.
     final GWCommand command = args;
     command[GatewayCommand.command] = GatewayCommand.connect;
@@ -87,7 +79,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     // Check the result
     if (res == fail) {
       Log.warn('Connect command failed');
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [
           TextContent(text: '_connectCallback - connect command failed'),
         ],
@@ -106,18 +98,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
   }
 
   // Subscribe callback
-  Future<CallToolResult> _subscribeCallback({
-    Map<String, dynamic>? args,
-    RequestHandlerExtra? extra,
-  }) async {
-    if (args == null) {
-      Log.warn('_subscribeCallback - args are null');
-      return CallToolResult.fromContent(
-        content: [TextContent(text: '_subscribeCallback - args are null')],
-        isError: true,
-      );
-    }
-
+  Future<CallToolResult> _subscribeCallback(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) async {
     // Build and send the command.
     final GWCommand command = args;
     command[GatewayCommand.command] = GatewayCommand.subscribe;
@@ -128,7 +112,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     // Check the result
     if (res == fail) {
       Log.warn('Subscribe command failed');
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [
           TextContent(text: '_subscribeCallback - subscribe command failed'),
         ],
@@ -147,18 +131,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
   }
 
   // Unsubscribe callback
-  Future<CallToolResult> _unsubscribeCallback({
-    Map<String, dynamic>? args,
-    RequestHandlerExtra? extra,
-  }) async {
-    if (args == null) {
-      Log.warn('_unsubscribeCallback - args are null');
-      return CallToolResult.fromContent(
-        content: [TextContent(text: '_unsubscribeCallback - args are null')],
-        isError: true,
-      );
-    }
-
+  Future<CallToolResult> _unsubscribeCallback(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) async {
     // Build and send the command.
     final GWCommand command = args;
     command[GatewayCommand.command] = GatewayCommand.unsubscribe;
@@ -169,7 +145,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     // Check the result
     if (res == fail) {
       Log.warn('Unsubscribe command failed');
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [
           TextContent(
             text: '_unsubscribeCallback - unsubscribe command failed',
@@ -190,18 +166,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
   }
 
   // Publish callback
-  Future<CallToolResult> _publishCallback({
-    Map<String, dynamic>? args,
-    RequestHandlerExtra? extra,
-  }) async {
-    if (args == null) {
-      Log.warn('_publishCallback - args are null');
-      return CallToolResult.fromContent(
-        content: [TextContent(text: '_publishCallback - args are null')],
-        isError: true,
-      );
-    }
-
+  Future<CallToolResult> _publishCallback(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) async {
     // Build and send the command.
     final GWCommand command = args;
     command[GatewayCommand.command] = GatewayCommand.publish;
@@ -212,7 +180,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     // Check the result
     if (res == fail) {
       Log.warn('Publish command failed');
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [
           TextContent(text: '_publishCallback - publish command failed'),
         ],
@@ -231,18 +199,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
   }
 
   // Get messages callback
-  Future<CallToolResult> _getMessagesCallback({
-    Map<String, dynamic>? args,
-    RequestHandlerExtra? extra,
-  }) async {
-    if (args == null) {
-      Log.warn('_getMessagesCallback - args are null');
-      return CallToolResult.fromContent(
-        content: [TextContent(text: '_getMessagesCallback - args are null')],
-        isError: true,
-      );
-    }
-
+  Future<CallToolResult> _getMessagesCallback(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) async {
     // Build and send the command.
     final GWCommand command = args;
     command[GatewayCommand.command] = GatewayCommand.messages;
@@ -253,7 +213,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     // Check the result
     if (res == fail) {
       Log.warn('get messages command failed');
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [
           TextContent(
             text: '_getMessagesCallback - get messages command failed',
@@ -274,10 +234,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
   }
 
   // Disconnect callback
-  Future<CallToolResult> _disconnectCallback({
-    Map<String, dynamic>? args,
-    RequestHandlerExtra? extra,
-  }) async {
+  Future<CallToolResult> _disconnectCallback(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) async {
     // No arguments, just build and send the command.
     final GWCommand command = {};
     command[GatewayCommand.command] = GatewayCommand.disconnect;
@@ -288,7 +248,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
     // Check the result
     if (res == fail) {
       Log.warn('Disconnect command failed');
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [
           TextContent(text: '_disconnectCallback - disconnect command failed'),
         ],
@@ -312,10 +272,10 @@ class MqttGatewayBridge extends A2AMCPBridge {
     var inputSchema = ToolInputSchema(properties: {});
     var outputSchema = ToolOutputSchema(
       properties: {
-        "result": {
+        "result": JsonSchema.fromJson({
           "type": "string",
           "description": "The status of the MQTT Gateway",
-        },
+        }),
       },
       required: ["result"],
     );
@@ -325,40 +285,40 @@ class MqttGatewayBridge extends A2AMCPBridge {
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
-    registerTool(registerAgent, _statusCallback);
+    registerTool(registerAgent, FunctionToolCallback(_statusCallback));
 
     // Connect
     inputSchema = ToolInputSchema(
       properties: {
-        "broker_url": {
+        "broker_url": JsonSchema.fromJson({
           "type": "string",
           "description": "URL of the MQTT broker",
-        },
-        "port": {
+        }),
+        "port": JsonSchema.fromJson({
           "type": "integer",
           "description": "The MQTT Broker port if not 1883",
-        },
-        "client_id": {
+        }),
+        "client_id": JsonSchema.fromJson({
           "type": "String",
           "description": "The MQTT client id to use",
-        },
-        "user_name": {
+        }),
+        "user_name": JsonSchema.fromJson({
           "type": "String",
           "description": "The MQTT Broker user name",
-        },
-        "password": {
+        }),
+        "password": JsonSchema.fromJson({
           "type": "String",
           "description": "The MQTT Broker password",
-        },
+        }),
       },
       required: ["broker_url"],
     );
     outputSchema = ToolOutputSchema(
       properties: {
-        "result": {
+        "result": JsonSchema.fromJson({
           "type": "string",
           "description": "The connect command success/fail indicator",
-        },
+        }),
       },
       required: ["result"],
     );
@@ -368,25 +328,28 @@ class MqttGatewayBridge extends A2AMCPBridge {
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
-    registerTool(registerAgent, _connectCallback);
+    registerTool(registerAgent, FunctionToolCallback(_connectCallback));
 
     // Subscribe
     inputSchema = ToolInputSchema(
       properties: {
-        "topic": {"type": "string", "description": "The subscription topic"},
-        "qos": {
+        "topic": JsonSchema.fromJson({
+          "type": "string",
+          "description": "The subscription topic",
+        }),
+        "qos": JsonSchema.fromJson({
           "type": "integer",
           "description": "The QoS for the subscription",
-        },
+        }),
       },
       required: ["topic"],
     );
     outputSchema = ToolOutputSchema(
       properties: {
-        "result": {
+        "result": JsonSchema.fromJson({
           "type": "string",
           "description": "The subscribe command success/fail indicator",
-        },
+        }),
       },
       required: ["result"],
     );
@@ -396,21 +359,24 @@ class MqttGatewayBridge extends A2AMCPBridge {
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
-    registerTool(registerAgent, _subscribeCallback);
+    registerTool(registerAgent, FunctionToolCallback(_subscribeCallback));
 
     // Unsubscribe
     inputSchema = ToolInputSchema(
       properties: {
-        "topic": {"type": "string", "description": "The unsubscription topic"},
+        "topic": JsonSchema.fromJson({
+          "type": "string",
+          "description": "The unsubscription topic",
+        }),
       },
       required: ["topic"],
     );
     outputSchema = ToolOutputSchema(
       properties: {
-        "result": {
+        "result": JsonSchema.fromJson({
           "type": "string",
           "description": "The unsubscribe command success/fail indicator",
-        },
+        }),
       },
       required: ["result"],
     );
@@ -420,32 +386,32 @@ class MqttGatewayBridge extends A2AMCPBridge {
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
-    registerTool(registerAgent, _unsubscribeCallback);
+    registerTool(registerAgent, FunctionToolCallback(_unsubscribeCallback));
 
     // Publish
     inputSchema = ToolInputSchema(
       properties: {
-        "topic": {
+        "topic": JsonSchema.fromJson({
           "type": "string",
           "description": "The MQTT topic to publish to",
-        },
-        "qos": {
+        }),
+        "qos": JsonSchema.fromJson({
           "type": "integer",
           "description": "The QoS for the published message",
-        },
-        "payload": {
+        }),
+        "payload": JsonSchema.fromJson({
           "type": "String",
           "description": "The payload of the published message",
-        },
+        }),
       },
       required: ["topic", "payload"],
     );
     outputSchema = ToolOutputSchema(
       properties: {
-        "result": {
+        "result": JsonSchema.fromJson({
           "type": "string",
           "description": "The publish command success/fail indicator",
-        },
+        }),
       },
       required: ["result"],
     );
@@ -455,21 +421,24 @@ class MqttGatewayBridge extends A2AMCPBridge {
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
-    registerTool(registerAgent, _publishCallback);
+    registerTool(registerAgent, FunctionToolCallback(_publishCallback));
 
     // Get Messages
     inputSchema = ToolInputSchema(
       properties: {
-        "topic": {"type": "string", "description": "The message topic"},
+        "topic": JsonSchema.fromJson({
+          "type": "string",
+          "description": "The message topic",
+        }),
       },
       required: ["topic"],
     );
     outputSchema = ToolOutputSchema(
       properties: {
-        "result": {
+        "result": JsonSchema.fromJson({
           "type": "string",
           "description": "The get messages command success/fail indicator",
-        },
+        }),
       },
       required: ["result"],
     );
@@ -479,16 +448,16 @@ class MqttGatewayBridge extends A2AMCPBridge {
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
-    registerTool(registerAgent, _getMessagesCallback);
+    registerTool(registerAgent, FunctionToolCallback(_getMessagesCallback));
 
     // Disconnect
     inputSchema = ToolInputSchema(properties: {});
     outputSchema = ToolOutputSchema(
       properties: {
-        "result": {
+        "result": JsonSchema.fromJson({
           "type": "string",
           "description": "The disconnect command success indicator",
-        },
+        }),
       },
       required: ["result"],
     );
@@ -498,7 +467,7 @@ class MqttGatewayBridge extends A2AMCPBridge {
       inputSchema: inputSchema,
       outputSchema: outputSchema,
     );
-    registerTool(registerAgent, _disconnectCallback);
+    registerTool(registerAgent, FunctionToolCallback(_disconnectCallback));
   }
 
   // Create the A2A client
