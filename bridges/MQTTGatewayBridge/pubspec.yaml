@@ -11,7 +11,7 @@ environment:
 
 dependencies:
     colorize: '^3.0.0'
-    a2a_mcp_bridge: '^1.0.1'
+    a2a_mcp_bridge: '^1.1.0'
     mcp_dart: '^1.1.2'
     a2a: '^4.0.0'
 

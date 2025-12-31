@@ -1,0 +1,16 @@
+MQTTGatewayBridge] Creating the MQTT Gateway Bridge
+A2AMcpServer: - MCP Streamable HTTP Server listening on port 10005
+[MQTTGatewayBridge] Sending status command
+[MQTTGatewayBridge] MQTT Gateway agent is not yet registered, please register it
+[MQTTGatewayBridge] Status command failed
+A2AMCPBridge:: Agent MQTT Gateway Agent at http://localhost:10004 registered
+[MQTTGatewayBridge] Sending status command
+[MQTTGatewayBridge] A2A client created for URL [http://localhost:10004/]
+[MQTTGatewayBridge] Sending connect command
+[MQTTGatewayBridge] Sending status command
+[MQTTGatewayBridge] Sending a subscribe command
+[MQTTGatewayBridge] Sending a publish command
+[MQTTGatewayBridge] Sending a get messages command
+[MQTTGatewayBridge] Sending an unsubscribe command
+[MQTTGatewayBridge] Sending disconnect command
+[MQTTGatewayBridge] Sending status command
